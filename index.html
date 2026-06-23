@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Yönlendiriliyor...</title>
+<title>Yükleniyor...</title>
 <style>
   /* Minimalist ve Modern Tasarım (Soft Black & Glassmorphic) */
   * {
@@ -14,7 +14,7 @@
   body {
     background-color: #121212;
     color: #e0e0e0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,13 +32,7 @@
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     max-width: 400px;
     width: 90%;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-  }
-  .container.show {
-    opacity: 1;
-    transform: translateY(0);
+    display: none; /* İlk başta gizli, sadece 404'te anında görünür */
   }
   .error-code {
     font-size: 4.5rem;
@@ -57,97 +51,94 @@
   p {
     font-size: 0.95rem;
     color: #888;
-    margin-bottom: 1.5rem;
     line-height: 1.4;
-  }
-  .loader {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s ease-in-out infinite;
-    margin: 0 auto;
-  }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
   }
 </style>
 <script>
   (function () {
     var yol = window.location.pathname;
     var sorgu = window.location.search;
-    var dosyaUzantisi = ".html";
+    var uzantı = ".html";
 
-    // Temiz kelimeyi ayıkla (Örn: "/elma/" -> "elma")
+    // URL'deki gereksiz baş/son slaşları temizle
     var kelime = yol.replace(/^\/+/, "").replace(/\/+$/, "");
 
-    // 1) HİÇBİR ŞEY EKLENMEMİŞSE VEYA INDEX/SEARCH İSE -> search.html aç
-    if (kelime === "" || kelime === "index.html" || kelime === "index") {
-      if (sorgu === "") {
-        window.location.replace("./search.html");
-        return;
+    // Sayfa içeriğini URL'yi değiştirmeden ekrana basan fonksiyon
+    function icerigiGetir(dosyaAdi) {
+      fetch("./" + dosyaAdi)
+        .then(function (yanit) {
+          if (yanit.ok) return yanit.text();
+          throw new Error();
+        })
+        .then(function (html) {
+          document.open();
+          document.write(html);
+          document.close();
+        })
+        .catch(function () {
+          // Eğer çağrılan dosya da (örn search.html) bir sebeple yüklenemezse 404 göster
+          tetikle404();
+        });
+    }
+
+    // 404 Hata Ekranını Göster ve ardından Arama İçeriğini Bas
+    function tetikle404() {
+      // Sayfa yüklenince 404 tasarımını görünür yap
+      var arayuzYukle = function() {
+        var kutu = document.getElementById("status-box");
+        if (kutu) {
+          kutu.style.display = "block";
+          // 2 saniye sonra URL'yi değiştirmeden search içeriğini ekrana bas
+          setTimeout(function() {
+            icerigiGetir("search.html");
+          }, 2000);
+        }
+      };
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", arayuzYukle);
       } else {
-        return; // Eğer ?s= gibi bir arama sorgusu varsa scripti durdur, sayfa yüklensin
+        arayuzYukle();
       }
     }
 
-    // Eğer kullanıcı direkt .html ile girmeye çalıştıysa uzantıyı temizle (URL temizliği için)
-    if (kelime.endsWith(dosyaUzantisi)) {
-      var temizUrl = window.location.origin + "/" + kelime.replace(dosyaUzantisi, "") + sorgu;
-      window.history.replaceState(null, "", temizUrl);
-      kelime = kelime.replace(dosyaUzantisi, "");
+    // DURUM 1: LİNKTE HİÇBİR ŞEY YOKSA (Direkt ana domain ise)
+    if (kelime === "" || kelime === "index.html" || kelime === "index") {
+      // URL'ye asla dokunma, "search.html" yazısını göstermeden içeriğini çek
+      icerigiGetir("search.html");
+      return;
     }
 
-    // 2) BİR KELİME EKLENMİŞSE ARKA PLANDA KONTROL ET
-    var hedefDosya = "./" + kelime + dosyaUzantisi;
+    // Kullanıcı elle .html yazdıysa URL temizliği yap (Görsel olarak gizle)
+    if (kelime.endsWith(uzantı)) {
+      kelime = kelime.replace(uzantı, "");
+      window.history.replaceState(null, "", window.location.origin + "/" + kelime + sorgu);
+    }
 
-    fetch(hedefDosya, { method: "HEAD" })
+    // DURUM 2: BİR KELİME YAZILDIYSA ARKA PLANDA KONTROL ET
+    fetch("./" + kelime + uzantı, { method: "HEAD" })
       .then(function (yanit) {
         if (yanit.ok) {
-          // Sayfa var! URL'deki kelimeyi değiştirmeden içeriği buraya gömüyoruz (Maskeleme)
-          fetch("./" + kelime + dosyaUzantisi)
-            .then(t => t.text())
-            .then(html => {
-              document.open();
-              document.write(html);
-              document.close();
-            });
+          // Dosya var! URL değişmeden içeriği yükle
+          icerigiGetir(kelime + uzantı);
         } else {
-          // Sayfa yoksa 404 ekranını göster
+          // Dosya yoksa modern 404 arayüzüne geç
           tetikle404();
         }
       })
       .catch(function () {
-        // İstek başarısız olursa (Ağ hatası vs.) 404 ekranını göster
         tetikle404();
       });
-
-    // 404 Hatası animasyonlu gösterimi ve search.html'e yönlendirme fonksiyonu
-    function tetikle404() {
-      document.addEventListener("DOMContentLoaded", function() {
-        // Yönlendirme ekranı yerine 404 içeriğini bas
-        document.getElementById("status-box").innerHTML = `
-          <div class="error-code">404</div>
-          <h1>Sayfa Bulunamadı</h1>
-          <p>Aradığınız içerik mevcut değil veya taşınmış olabilir. <br>Arama sayfasına yönlendiriliyorsunuz...</p>
-          <div class="loader"></div>
-        `;
-        document.getElementById("status-box").classList.add("show");
-        
-        // 3 saniye sonra search.html'e at
-        setTimeout(function() {
-          window.location.replace("./search.html");
-        }, 3000);
-      });
-    }
   })();
 </script>
 </head>
 <body>
 
   <div class="container" id="status-box">
-    </div>
+    <div class="error-code">404</div>
+    <h1>Sayfa Bulunamadı</h1>
+    <p>Aradığınız içerik mevcut değil. Ana sayfaya aktarılıyorsunuz...</p>
+  </div>
 
 </body>
 </html>
