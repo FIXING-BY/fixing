@@ -32,7 +32,7 @@
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     max-width: 400px;
     width: 90%;
-    display: none; /* İlk başta gizli, sadece 404'te anında görünür */
+    display: none; /* Sadece gerçek 404 durumunda anlık görünür */
   }
   .error-code {
     font-size: 4.5rem;
@@ -60,74 +60,61 @@
     var sorgu = window.location.search;
     var uzantı = ".html";
 
-    // URL'deki gereksiz baş/son slaşları temizle
+    // URL temizliği (Slaşları uçur)
     var kelime = yol.replace(/^\/+/, "").replace(/\/+$/, "");
 
-    // Sayfa içeriğini URL'yi değiştirmeden ekrana basan fonksiyon
-    function icerigiGetir(dosyaAdi) {
-      fetch("./" + dosyaAdi)
-        .then(function (yanit) {
-          if (yanit.ok) return yanit.text();
-          throw new Error();
-        })
-        .then(function (html) {
-          document.open();
-          document.write(html);
-          document.close();
-        })
-        .catch(function () {
-          // Eğer çağrılan dosya da (örn search.html) bir sebeple yüklenemezse 404 göster
-          tetikle404();
-        });
+    // Sayfayı URL değiştirmeden ekrana basan jet fonksiyon
+    function sayfayiYaz(html) {
+      document.open();
+      document.write(html);
+      document.close();
     }
 
-    // 404 Hata Ekranını Göster ve ardından Arama İçeriğini Bas
-    function tetikle404() {
-      // Sayfa yüklenince 404 tasarımını görünür yap
-      var arayuzYukle = function() {
-        var kutu = document.getElementById("status-box");
-        if (kutu) {
-          kutu.style.display = "block";
-          // 2 saniye sonra URL'yi değiştirmeden search içeriğini ekrana bas
-          setTimeout(function() {
-            icerigiGetir("search.html");
-          }, 2000);
-        }
-      };
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", arayuzYukle);
-      } else {
-        arayuzYukle();
-      }
+    // Arama sayfasını anında arkada yükle
+    function anaSayfayaGec() {
+      fetch("./search.html")
+        .then(function (r) { if (r.ok) return r.text(); })
+        .then(function (html) { if (html) sayfayiYaz(html); });
     }
 
-    // DURUM 1: LİNKTE HİÇBİR ŞEY YOKSA (Direkt ana domain ise)
+    // DURUM 1: Boş link durumu (Direkt ana dizin)
     if (kelime === "" || kelime === "index.html" || kelime === "index") {
-      // URL'ye asla dokunma, "search.html" yazısını göstermeden içeriğini çek
-      icerigiGetir("search.html");
+      anaSayfayaGec();
       return;
     }
 
-    // Kullanıcı elle .html yazdıysa URL temizliği yap (Görsel olarak gizle)
+    // Kullanıcı elle .html yazdıysa adres çubuğunu temizle
     if (kelime.endsWith(uzantı)) {
       kelime = kelime.replace(uzantı, "");
       window.history.replaceState(null, "", window.location.origin + "/" + kelime + sorgu);
     }
 
-    // DURUM 2: BİR KELİME YAZILDIYSA ARKA PLANDA KONTROL ET
-    fetch("./" + kelime + uzantı, { method: "HEAD" })
+    // DURUM 2: Tek seferde fetch ile içeriği iste (Hızın kaynağı burası)
+    fetch("./" + kelime + uzantı)
       .then(function (yanit) {
         if (yanit.ok) {
-          // Dosya var! URL değişmeden içeriği yükle
-          icerigiGetir(kelime + uzantı);
-        } else {
-          // Dosya yoksa modern 404 arayüzüne geç
-          tetikle404();
+          return yanit.text(); // Dosya varsa içeriği oku
         }
+        throw new Error("404"); // Yoksa direkt hataya düşür
+      })
+      .then(function (html) {
+        sayfayiYaz(html); // Varsa anında ekrana bas
       })
       .catch(function () {
-        tetikle404();
+        // DURUM 3: Dosya yoksa anında burası çalışır (Bekleme yok)
+        var arayuzGoster = function() {
+          var kutu = document.getElementById("status-box");
+          if (kutu) {
+            kutu.style.display = "block"; // 404 tasarımını göster
+            anaSayfayaGec(); // Hiç beklemeden arkadan search.html'i yükle
+          }
+        };
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", arayuzGoster);
+        } else {
+          arayuzGoster();
+        }
       });
   })();
 </script>
@@ -137,7 +124,7 @@
   <div class="container" id="status-box">
     <div class="error-code">404</div>
     <h1>Sayfa Bulunamadı</h1>
-    <p>Aradığınız içerik mevcut değil. Ana sayfaya aktarılıyorsunuz...</p>
+    <p>İçerik mevcut değil, arama sayfasına aktarılıyorsunuz...</p>
   </div>
 
 </body>
