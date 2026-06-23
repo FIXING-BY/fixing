@@ -5,20 +5,13 @@
 <title>Yönlendirme</title>
 <script>
   /*
-    VERİTABANI
-    -----------
-    Buraya "kelime adı" : "açılacak dosya" şeklinde istediğiniz kadar
-    satır ekleyebilirsiniz. Örnek:
-      "elma": "elma.html",
-      "armut": "armut.html"
-    Soldaki kısım (tırnak içindeki) linkte yazacak kelime,
-    sağdaki kısım ise o kelime yazıldığında açılacak gerçek dosya.
+    DOSYA UZANTISI
+    --------------
+    Link sonundaki kelime ile aynı isimde, bu uzantıya sahip bir dosya
+    aranacak. Örn: siteadi.com/elma  ->  elma.html dosyası var mı diye
+    kontrol edilir. Dosyalarınız .php ise aşağıdaki değeri ".php" yapın.
   */
-  var veriTabani = {
-    "ornek1": "ornek1.html",
-    "ornek2": "ornek2.html"
-    // "kelime": "dosya.html"   <-- yeni eklemek için bu satırı kopyalayıp doldurun
-  };
+  var dosyaUzantisi = ".html";
 
   (function () {
     var yol   = window.location.pathname; // örn: "/elma"
@@ -37,14 +30,28 @@
       return;
     }
 
-    // 3) UZATMADA SADECE VERİTABANINDAKİ KELİME VARSA -> o dosyayı direkt aç
+    // 3) UZATMADA SADECE BİR KELİME VARSA -> o isimde dosya gerçekten var mı diye bak
     //    (path'in başındaki/sonundaki "/" temizlenip kelime çıkarılıyor)
     var kelime = yol.replace(/^\/+/, "").replace(/\/+$/, "");
 
-    if (kelime !== "" && veriTabani.hasOwnProperty(kelime)) {
-      window.location.replace(veriTabani[kelime]);
-      return;
+    if (kelime === "") {
+      return; // kelime yoksa hiçbir şey yapma
     }
+
+    var dosyaAdi = kelime + dosyaUzantisi;
+
+    // Dosya yapısında bu isimde bir dosya var mı kontrol edilir
+    fetch(dosyaAdi, { method: "HEAD" })
+      .then(function (yanit) {
+        if (yanit.ok) {
+          // Dosya gerçekten varsa direkt onu aç
+          window.location.replace(dosyaAdi);
+        }
+        // Dosya yoksa: hiçbir etki olmaz, sayfa olduğu gibi kalır
+      })
+      .catch(function () {
+        // İstek başarısız olursa da hiçbir etki olmaz
+      });
 
     // 4) DİĞER TÜM DURUMLAR -> hiçbir etki yok, sayfa olduğu gibi kalır
   })();
