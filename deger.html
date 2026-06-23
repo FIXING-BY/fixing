@@ -330,6 +330,13 @@ function normalize(str) {
         .replace(/ /g, '-');
 }
 
+// Klasör adı: sadece boşlukları tire yap, Türkçe karakterler kalabilir
+function folderName(str) {
+    return str
+        .toLocaleLowerCase('tr-TR')
+        .replace(/ /g, '-');
+}
+
 async function callAnalyst(question, dataSet) {
     const systemInstruction = `
     Senin adın Değer YZ. Yapımcın: Hasan Eymen Kartal.
@@ -441,8 +448,8 @@ async function processSearch(q) {
 
     for (const auth of sortedList) {
         try {
-            const folder = normalize(book.ad);
-            const file = normalize(auth);
+            const folder = folderName(book.ad);
+            const file = auth;
             const url = `degerlendirmeler/${folder}/${file}.txt`;
             const fRes = await fetch(encodeURI(url));
             if (fRes.ok) {
@@ -458,7 +465,7 @@ async function processSearch(q) {
         appendMessage(result, true, authNames);
         saveToHistory(q);
     } else {
-        appendMessage(`⚠️ Değerlendirme dosyası bulunamadı. <code>${normalize(book.ad)}/degerlendirmeler/</code> klasörünü kontrol et.`);
+        appendMessage(`⚠️ Değerlendirme dosyası bulunamadı. <code>degerlendirmeler/${folderName(book.ad)}/</code> klasörünü kontrol et.`);
     }
 }
 
@@ -501,3 +508,4 @@ window.onload = () => { setTheme(localStorage.getItem('yz_theme_v3') || 'standar
     </script>
 </body>
 </html>
+
