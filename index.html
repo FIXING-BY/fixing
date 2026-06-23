@@ -2,62 +2,152 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Yönlendirme</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yönlendiriliyor...</title>
+<style>
+  /* Minimalist ve Modern Tasarım (Soft Black & Glassmorphic) */
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+  .container {
+    text-align: center;
+    padding: 2.5rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    max-width: 400px;
+    width: 90%;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .container.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .error-code {
+    font-size: 4.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+  p {
+    font-size: 0.95rem;
+    color: #888;
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+  .loader {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin: 0 auto;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
 <script>
-  /*
-    DOSYA UZANTISI
-    --------------
-    Link sonundaki kelime ile aynı isimde, bu uzantıya sahip bir dosya
-    aranacak. Örn: siteadi.com/elma  ->  elma.html dosyası var mı diye
-    kontrol edilir. Dosyalarınız .php ise aşağıdaki değeri ".php" yapın.
-  */
-  var dosyaUzantisi = ".html";
-
   (function () {
-    var yol   = window.location.pathname; // örn: "/elma"
-    var sorgu = window.location.search;   // örn: "?s=elma"
-    var uzatma = yol + sorgu;             // domainden sonraki her şey
+    var yol = window.location.pathname;
+    var sorgu = window.location.search;
+    var dosyaUzantisi = ".html";
 
-    // 1) HİÇ UZATMA YOKSA -> search.html aç
-    var yolBos = (yol === "/" || yol === "" || yol === "/index.html");
-    if (yolBos && sorgu === "") {
-      window.location.replace("search.html");
-      return;
-    }
-
-    // 2) UZATMA "/?s=" veya "?s=" İLE BAŞLIYORSA -> hiçbir şey yapma
-    if (uzatma.indexOf("/?s=") === 0 || uzatma.indexOf("?s=") === 0) {
-      return;
-    }
-
-    // 3) UZATMADA SADECE BİR KELİME VARSA -> o isimde dosya gerçekten var mı diye bak
-    //    (path'in başındaki/sonundaki "/" temizlenip kelime çıkarılıyor)
+    // Temiz kelimeyi ayıkla (Örn: "/elma/" -> "elma")
     var kelime = yol.replace(/^\/+/, "").replace(/\/+$/, "");
 
-    if (kelime === "") {
-      return; // kelime yoksa hiçbir şey yapma
+    // 1) HİÇBİR ŞEY EKLENMEMİŞSE VEYA INDEX/SEARCH İSE -> search.html aç
+    if (kelime === "" || kelime === "index.html" || kelime === "index") {
+      if (sorgu === "") {
+        window.location.replace("./search.html");
+        return;
+      } else {
+        return; // Eğer ?s= gibi bir arama sorgusu varsa scripti durdur, sayfa yüklensin
+      }
     }
 
-    var dosyaAdi = kelime + dosyaUzantisi;
+    // Eğer kullanıcı direkt .html ile girmeye çalıştıysa uzantıyı temizle (URL temizliği için)
+    if (kelime.endsWith(dosyaUzantisi)) {
+      var temizUrl = window.location.origin + "/" + kelime.replace(dosyaUzantisi, "") + sorgu;
+      window.history.replaceState(null, "", temizUrl);
+      kelime = kelime.replace(dosyaUzantisi, "");
+    }
 
-    // Dosya yapısında bu isimde bir dosya var mı kontrol edilir
-    fetch(dosyaAdi, { method: "HEAD" })
+    // 2) BİR KELİME EKLENMİŞSE ARKA PLANDA KONTROL ET
+    var hedefDosya = "./" + kelime + dosyaUzantisi;
+
+    fetch(hedefDosya, { method: "HEAD" })
       .then(function (yanit) {
         if (yanit.ok) {
-          // Dosya gerçekten varsa direkt onu aç
-          window.location.replace(dosyaAdi);
+          // Sayfa var! URL'deki kelimeyi değiştirmeden içeriği buraya gömüyoruz (Maskeleme)
+          fetch("./" + kelime + dosyaUzantisi)
+            .then(t => t.text())
+            .then(html => {
+              document.open();
+              document.write(html);
+              document.close();
+            });
+        } else {
+          // Sayfa yoksa 404 ekranını göster
+          tetikle404();
         }
-        // Dosya yoksa: hiçbir etki olmaz, sayfa olduğu gibi kalır
       })
       .catch(function () {
-        // İstek başarısız olursa da hiçbir etki olmaz
+        // İstek başarısız olursa (Ağ hatası vs.) 404 ekranını göster
+        tetikle404();
       });
 
-    // 4) DİĞER TÜM DURUMLAR -> hiçbir etki yok, sayfa olduğu gibi kalır
+    // 404 Hatası animasyonlu gösterimi ve search.html'e yönlendirme fonksiyonu
+    function tetikle404() {
+      document.addEventListener("DOMContentLoaded", function() {
+        // Yönlendirme ekranı yerine 404 içeriğini bas
+        document.getElementById("status-box").innerHTML = `
+          <div class="error-code">404</div>
+          <h1>Sayfa Bulunamadı</h1>
+          <p>Aradığınız içerik mevcut değil veya taşınmış olabilir. <br>Arama sayfasına yönlendiriliyorsunuz...</p>
+          <div class="loader"></div>
+        `;
+        document.getElementById("status-box").classList.add("show");
+        
+        // 3 saniye sonra search.html'e at
+        setTimeout(function() {
+          window.location.replace("./search.html");
+        }, 3000);
+      });
+    }
   })();
 </script>
 </head>
 <body>
-  <!-- Bu sayfanın görünür bir içeriği yok, sadece yönlendirme yapar -->
+
+  <div class="container" id="status-box">
+    </div>
+
 </body>
 </html>
