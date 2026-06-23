@@ -317,6 +317,18 @@ function appendMessage(text, isBot = true, sources = []) {
     chatFlow.scrollTop = chatFlow.scrollHeight;
 }
 
+// Türkçe karakterleri ASCII'ye normalize et (klasör/dosya yolları için)
+function normalize(str) {
+    return str
+        .toLocaleLowerCase('tr-TR')
+        .replace(/ğ/g, 'g')
+        .replace(/ı/g, 'i')
+        .replace(/ş/g, 's')
+        .replace(/ç/g, 'c')
+        .replace(/ö/g, 'o')
+        .replace(/ü/g, 'u');
+}
+
 async function callAnalyst(question, dataSet) {
     const systemInstruction = `
     Senin adın Değer YZ. Yapımcın: Hasan Eymen Kartal.
@@ -344,15 +356,44 @@ async function callAnalyst(question, dataSet) {
     } catch (e) { return "HATA: Analiz motoru bağlantısı koptu. " + e.message; }
 }
 
+async function callChat(question) {
+    const systemInstruction = `
+    Senin adın Değer YZ. Yapımcın: Hasan Eymen Kartal.
+    Sen samimi ve kısa cevap veren bir sohbet asistanısın.
+    Kullanıcıyla Türkçe sohbet et. Selamlaşma, hal hatır, genel sorular gibi şeylere cevap verebilirsin.
+    Ama şunu unutma: Kitap veya film soruları gelirse "Bu konuda sana özel kütüphanemden cevap verebilirim, kitap adını söyle!" de.
+    Başka hiçbir konuda uzman tavsiyesi verme (tıp, hukuk vb.).
+    `;
+    try {
+        const r = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+                model: "llama-3.1-8b-instant",
+                messages: [{ role: "system", content: systemInstruction }, { role: "user", content: question }],
+                temperature: 0.7
+            })
+        });
+        const d = await r.json();
+        if (d.error) return `HATA: ${d.error.message}`;
+        return d.choices[0].message.content;
+    } catch (e) { return "HATA: Bağlantı koptu. " + e.message; }
+}
+
 async function processSearch(q) {
     const lowQ = q.toLocaleLowerCase('tr-TR');
-    
-    if (lowQ.includes("kimsin") || lowQ.includes("adın ne")) return appendMessage("Ben <b>Değer YZ</b>. Hasan Eymen Kartal'ın özel kütüphane analiz asistanıyım.");
-    if (lowQ.includes("kim yaptı") || lowQ.includes("sahibin")) return appendMessage("Ben <b>Hasan Eymen Kartal</b> tarafından kodlandım.");
+    const normQ = normalize(q);
 
+    // Sabit cevaplar
+    if (lowQ.includes("kimsin") || lowQ.includes("adin ne") || normQ.includes("kimsin") || normQ.includes("adin ne")) 
+        return appendMessage("Ben <b>Değer YZ</b>. Hasan Eymen Kartal'ın özel kütüphane analiz asistanıyım.");
+    if (lowQ.includes("kim yapti") || lowQ.includes("sahibin") || normQ.includes("kim yapti") || normQ.includes("sahibin")) 
+        return appendMessage("Ben <b>Hasan Eymen Kartal</b> tarafından kodlandım.");
+
+    // index.json yükle
     let res;
     try { res = await fetch('index.json'); }
-    catch (e) { return appendMessage("⚠️ <b>Bağlantı Hatası:</b> <code>index.json</code> dosyasına ulaşılamadı. Dosyanın HTML ile aynı klasörde olduğundan emin ol."); }
+    catch (e) { return appendMessage("⚠️ <b>Bağlantı Hatası:</b> <code>index.json</code> dosyasına ulaşılamadı."); }
 
     if (!res.ok) return appendMessage(`⚠️ <b>Dosya Bulunamadı (${res.status}):</b> <code>index.json</code> sunucuda mevcut değil.`);
 
@@ -367,52 +408,57 @@ async function processSearch(q) {
         } catch(e) {}
     }
 
-    if (!rawText || rawText.trim() === "") {
-        return appendMessage('⚠️ <b>JSON Boş:</b> <code>index.json</code> dosyası tamamen boş.');
-    }
+    if (!rawText || rawText.trim() === "") return appendMessage('⚠️ <b>JSON Boş.</b>');
 
     let data;
     try { data = JSON.parse(rawText); }
-    catch (e) { return appendMessage(`⚠️ <b>JSON Format Hatası:</b> <code>index.json</code> geçerli bir JSON değil.<br>Hata: <code>${e.message}</code>`); }
+    catch (e) { return appendMessage(`⚠️ <b>JSON Format Hatası:</b> ${e.message}`); }
 
     if (!data.kütüphane || !Array.isArray(data.kütüphane)) {
-        return appendMessage('⚠️ <b>Yapı Hatası:</b> <code>index.json</code> içinde <code>"kütüphane"</code> dizisi bulunamadı.');
+        return appendMessage('⚠️ <b>Yapı Hatası:</b> <code>"kütüphane"</code> dizisi bulunamadı.');
     }
 
-    try {
-        const book = data.kütüphane.find(k => lowQ.includes(k.ad.toLocaleLowerCase('tr-TR')));
-        if (!book) return appendMessage("Bu eser kütüphanemde kayıtlı değil veya henüz dosyası eklenmemiş.");
+    // Kitap eşleştirme — hem normalize hem orijinal ile dene
+    const book = data.kütüphane.find(k => {
+        const normK = normalize(k.ad);
+        return normQ.includes(normK) || lowQ.includes(k.ad.toLocaleLowerCase('tr-TR'));
+    });
 
-        let sortedList = [
-            ...book.yazarlar.filter(a => a.toLocaleLowerCase('tr-TR').includes("(ö)")),
-            ...book.yazarlar.filter(a => !a.toLocaleLowerCase('tr-TR').includes("(ö)"))
-        ];
+    // Kitap bulunamadıysa → sohbet moduna geç
+    if (!book) {
+        const reply = await callChat(q);
+        return appendMessage(reply);
+    }
 
-        let docs = [];
-        let authNames = [];
+    let sortedList = [
+        ...book.yazarlar.filter(a => a.toLocaleLowerCase('tr-TR').includes("(ö)")),
+        ...book.yazarlar.filter(a => !a.toLocaleLowerCase('tr-TR').includes("(ö)"))
+    ];
 
-        for (const auth of sortedList) {
-            try {
-                const folder = book.ad.toLocaleLowerCase('tr-TR');
-                const file = auth.toLocaleLowerCase('tr-TR');
-                const url = `değerlendirmeler/${folder}/${file}.txt`;
-                const fRes = await fetch(encodeURI(url));
-                if (fRes.ok) {
-                    docs.push({ author: auth, content: await fRes.text() });
-                    authNames.push(auth);
-                }
-            } catch (e) {}
-        }
+    let docs = [];
+    let authNames = [];
 
-        if (authNames.length > 0) {
-            appendMessage("<i>Analiz motoru dosyaları tarıyor...</i>");
-            const result = await callAnalyst(q, docs);
-            appendMessage(result, true, authNames);
-            saveToHistory(q);
-        } else {
-            appendMessage(`⚠️ Değerlendirme dosyası bulunamadı. <code>değerlendirmeler/${book.ad.toLocaleLowerCase('tr-TR')}/</code> klasörünü kontrol et.`);
-        }
-    } catch (e) { appendMessage(`⚠️ <b>Beklenmedik Hata:</b> ${e.message}`); }
+    for (const auth of sortedList) {
+        try {
+            const folder = normalize(book.ad);
+            const file = normalize(auth);
+            const url = `degerlendirmeler/${folder}/${file}.txt`;
+            const fRes = await fetch(encodeURI(url));
+            if (fRes.ok) {
+                docs.push({ author: auth, content: await fRes.text() });
+                authNames.push(auth);
+            }
+        } catch (e) {}
+    }
+
+    if (authNames.length > 0) {
+        appendMessage("<i>Analiz motoru dosyaları tarıyor...</i>");
+        const result = await callAnalyst(q, docs);
+        appendMessage(result, true, authNames);
+        saveToHistory(q);
+    } else {
+        appendMessage(`⚠️ Değerlendirme dosyası bulunamadı. <code>degerlendirmeler/${normalize(book.ad)}/</code> klasörünü kontrol et.`);
+    }
 }
 
 function saveToHistory(q) {
