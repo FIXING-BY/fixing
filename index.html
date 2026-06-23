@@ -1,70 +1,56 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Sayfası Başlığı</title>
-    <style>
-        /* Temel Stil Ayarları */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 1rem 0;
-            text-align: center;
-        }
-        nav {
-            background: #444;
-            color: #fff;
-            padding: 0.5rem;
-            text-align: center;
-        }
-        nav a {
-            color: #fff;
-            margin: 0 10px;
-            text-decoration: none;
-        }
-        main {
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-        }
-        footer {
-            background: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Yönlendirme</title>
+<script>
+  /*
+    VERİTABANI
+    -----------
+    Buraya "kelime adı" : "açılacak dosya" şeklinde istediğiniz kadar
+    satır ekleyebilirsiniz. Örnek:
+      "elma": "elma.html",
+      "armut": "armut.html"
+    Soldaki kısım (tırnak içindeki) linkte yazacak kelime,
+    sağdaki kısım ise o kelime yazıldığında açılacak gerçek dosya.
+  */
+  var veriTabani = {
+    "ornek1": "ornek1.html",
+    "ornek2": "ornek2.html"
+    // "kelime": "dosya.html"   <-- yeni eklemek için bu satırı kopyalayıp doldurun
+  };
+
+  (function () {
+    var yol   = window.location.pathname; // örn: "/elma"
+    var sorgu = window.location.search;   // örn: "?s=elma"
+    var uzatma = yol + sorgu;             // domainden sonraki her şey
+
+    // 1) HİÇ UZATMA YOKSA -> search.html aç
+    var yolBos = (yol === "/" || yol === "" || yol === "/index.html");
+    if (yolBos && sorgu === "") {
+      window.location.replace("search.html");
+      return;
+    }
+
+    // 2) UZATMA "/?s=" veya "?s=" İLE BAŞLIYORSA -> hiçbir şey yapma
+    if (uzatma.indexOf("/?s=") === 0 || uzatma.indexOf("?s=") === 0) {
+      return;
+    }
+
+    // 3) UZATMADA SADECE VERİTABANINDAKİ KELİME VARSA -> o dosyayı direkt aç
+    //    (path'in başındaki/sonundaki "/" temizlenip kelime çıkarılıyor)
+    var kelime = yol.replace(/^\/+/, "").replace(/\/+$/, "");
+
+    if (kelime !== "" && veriTabani.hasOwnProperty(kelime)) {
+      window.location.replace(veriTabani[kelime]);
+      return;
+    }
+
+    // 4) DİĞER TÜM DURUMLAR -> hiçbir etki yok, sayfa olduğu gibi kalır
+  })();
+</script>
 </head>
 <body>
-
-    <header>
-        <h1>Siteme Hoş Geldiniz</h1>
-    </header>
-
-    <nav>
-        <a href="#">Ana Sayfa</a>
-        <a href="#">Hakkımızda</a>
-        <a href="#">İletişim</a>
-    </nav>
-
-    <main>
-        <h2>Hoş Geldiniz!</h2>
-        <p>Burası web sitenizin ana içerik alanıdır. İstediğiniz metinleri, görselleri veya diğer öğeleri buraya ekleyebilirsiniz.</p>
-    </main>
-
-    <footer>
-        <p>&copy; 2026 Web Tasarım Çalışması</p>
-    </footer>
-
+  <!-- Bu sayfanın görünür bir içeriği yok, sadece yönlendirme yapar -->
 </body>
 </html>
