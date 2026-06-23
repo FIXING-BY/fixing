@@ -326,7 +326,8 @@ function normalize(str) {
         .replace(/ş/g, 's')
         .replace(/ç/g, 'c')
         .replace(/ö/g, 'o')
-        .replace(/ü/g, 'u');
+        .replace(/ü/g, 'u')
+        .replace(/ /g, '-');
 }
 
 async function callAnalyst(question, dataSet) {
@@ -457,7 +458,7 @@ async function processSearch(q) {
         appendMessage(result, true, authNames);
         saveToHistory(q);
     } else {
-        appendMessage(`⚠️ Değerlendirme dosyası bulunamadı. <code>degerlendirmeler/${normalize(book.ad)}/</code> klasörünü kontrol et.`);
+        appendMessage(`⚠️ Değerlendirme dosyası bulunamadı. <code>${normalize(book.ad)}/degerlendirmeler/</code> klasörünü kontrol et.`);
     }
 }
 
