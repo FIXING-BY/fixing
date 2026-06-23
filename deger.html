@@ -7,7 +7,6 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3272 3272'><path fill='rgb(254,254,254)' d='M 773.691 986.084 L 772.791 984.088 C 779.634 972.417 796.011 956.836 806.008 947.569 C 861.783 895.829 929.313 858.443 1002.77 838.638 C 1074.68 819.933 1144.35 823.815 1218.03 823.825 L 1402.14 823.874 L 1977.83 823.872 L 2347.07 823.847 C 2401.86 823.84 2497.65 821.095 2549.07 826.395 C 2613.82 833.172 2676.36 853.779 2732.46 886.821 C 2837.68 948.965 2915.22 1049.25 2946.05 1167.94 C 2966.11 1245.19 2960.88 1348.31 2960.89 1429.58 L 2960.89 1708.09 L 2960.87 2095.63 C 2960.88 2159.53 2963.02 2239.56 2960.37 2302.31 L 2848.84 2373.67 C 2834.45 2382.94 2802.26 2402.71 2790.83 2412.89 L 2790.82 1688.81 L 2790.88 1494 C 2790.89 1479.77 2791.72 1416.72 2789.61 1405.33 C 2788.17 1423.18 2789.04 1453.79 2789.04 1472.38 L 2789.06 1593.27 C 2789.06 1662.54 2790.7 2409.4 2787.69 2412.41 C 2784.29 2415.8 2780.08 2417.89 2775.31 2418.36 C 2756.13 2420.24 2733.97 2416.92 2714.42 2416.97 C 2693.13 2417.03 2671.86 2418.24 2650.58 2418.13 C 2611.69 2417.93 2572.72 2416.04 2533.86 2414.67 C 2471.44 2412.47 2409.37 2413.63 2346.99 2412.53 C 2302.37 2411.74 2257.83 2408.62 2213.2 2407.85 L 1060 2388.66 L 772.846 2382.69 C 710.05 2381.05 648.559 2377.08 584.839 2379.26 C 569.298 2379.8 503.583 2379.54 484.758 2375.58 C 483.039 2375.22 482.059 2366.3 482.11 2363.08 C 482.914 2312.33 482.634 2261.35 482.633 2210.59 L 482.604 1856.84 L 482.533 1574.08 C 482.506 1493.65 477.403 1392.44 493.384 1315.39 C 517.005 1201.5 595.868 1089.25 693.593 1027.44 C 704.456 1020.57 715.501 1012.73 727.175 1007.29 C 737.042 1001.35 767.159 991.856 773.691 986.084 z'/></svg>">
     <style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-
 :root {
     --accent: rgb(96,255,127);
     --bg: #05070a;
@@ -18,194 +17,76 @@
     --msg-user: #161a20;
     --logo-shadow: rgba(96, 255, 127, 0.3);
 }
-
 body.theme-neon {
-    --bg: #60FF7F;
-    --glass-bg: rgba(180, 255, 200, 0.35);
-    --glass-border: rgba(200, 255, 215, 0.6);
-    --text: #000000;
-    --text-mute: rgba(0, 0, 0, 0.45);
-    --accent: #000000;
-    --msg-user: rgba(0, 0, 0, 0.85);
-    --logo-shadow: rgba(0, 0, 0, 0.15);
+    --bg: #60FF7F; --glass-bg: rgba(180,255,200,0.35); --glass-border: rgba(200,255,215,0.6);
+    --text: #000000; --text-mute: rgba(0,0,0,0.45); --accent: #000000;
+    --msg-user: rgba(0,0,0,0.85); --logo-shadow: rgba(0,0,0,0.15);
 }
-
 body.theme-grey {
-    --bg: #f0f3f7;
-    --glass-bg: rgba(0, 0, 0, 0.04);
-    --glass-border: rgba(0, 0, 0, 0.1);
-    --text: #1a1e23;
-    --text-mute: #667085;
-    --accent: #1e293b;
+    --bg: #f0f3f7; --glass-bg: rgba(0,0,0,0.04); --glass-border: rgba(0,0,0,0.1);
+    --text: #1a1e23; --text-mute: #667085; --accent: #1e293b;
 }
 body.theme-grey .msg-user { color: #ffffff; }
-
 body.theme-soft-dark {
-    --bg: #000000;
-    --glass-bg: rgba(255, 255, 255, 0.02);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --text: #e8e8e8;
-    --text-mute: rgba(255, 255, 255, 0.3);
-    --accent: rgb(96,255,127);
-    --msg-user: #111111;
-    --logo-shadow: rgba(96, 255, 127, 0.2);
+    --bg: #000000; --glass-bg: rgba(255,255,255,0.02); --glass-border: rgba(255,255,255,0.05);
+    --text: #e8e8e8; --text-mute: rgba(255,255,255,0.3); --accent: rgb(96,255,127);
+    --msg-user: #111111; --logo-shadow: rgba(96,255,127,0.2);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    height: 100vh;
-    display: flex;
-    overflow: hidden;
-}
-
-.glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(30px) saturate(200%);
-    border: 1px solid var(--glass-border);
-}
-
-#sidebar {
-    position: fixed; left: -320px; top: 15px; bottom: 15px; width: 300px;
-    border-radius: 24px; z-index: 1000; transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 30px; display: flex; flex-direction: column;
-}
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+.glass { background: var(--glass-bg); backdrop-filter: blur(30px) saturate(200%); border: 1px solid var(--glass-border); }
+#sidebar { position: fixed; left: -320px; top: 15px; bottom: 15px; width: 300px; border-radius: 24px; z-index: 1000; transition: all 0.6s cubic-bezier(0.4,0,0.2,1); padding: 30px; display: flex; flex-direction: column; }
 #sidebar.active { left: 15px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
-
-#sidebar-blur {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    z-index: 999; backdrop-filter: blur(8px);
-}
+#sidebar-blur { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(8px); }
 #sidebar-blur.active { display: block; }
-
 .sidebar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
 .brand-name { font-weight: 800; font-size: 0.9rem; color: var(--accent); letter-spacing: 1px; }
 #close-menu { background: none; border: none; color: var(--text); font-size: 1.2rem; cursor: pointer; }
-
 .menu-item label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-mute); margin-bottom: 12px; display: block; }
 .theme-btns { display: grid; gap: 8px; margin-bottom: 30px; }
 .t-btn { padding: 14px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.03); color: var(--text); cursor: pointer; font-weight: 700; font-size: 0.8rem; text-align: left; }
 .t-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-#clear-history {
-    margin-top: 15px;
-    padding: 12px;
-    border-radius: 14px;
-    background: rgba(255, 59, 48, 0.1);
-    color: #ff3b30;
-    border: 1px solid rgba(255, 59, 48, 0.2);
-    font-size: 0.8rem;
-    font-weight: 800;
-    cursor: pointer;
-    width: 100%;
-    transition: 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-#clear-history:hover {
-    background: #ff3b30;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 59, 48, 0.3);
-}
-
+#clear-history { margin-top: 15px; padding: 12px; border-radius: 14px; background: rgba(255,59,48,0.1); color: #ff3b30; border: 1px solid rgba(255,59,48,0.2); font-size: 0.8rem; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; text-transform: uppercase; letter-spacing: 0.5px; }
+#clear-history:hover { background: #ff3b30; color: #fff; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,59,48,0.3); }
 .main-screen { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; }
-
-.banner {
-    margin: 20px; height: 110px; border-radius: 24px; display: flex; align-items: center; 
-    justify-content: space-between; padding: 0 35px; z-index: 10;
-}
-
+.banner { margin: 20px; height: 110px; border-radius: 24px; display: flex; align-items: center; justify-content: space-between; padding: 0 35px; z-index: 10; }
 .banner-left { display: flex; align-items: center; gap: 30px; }
 .menu-icon { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 7px; }
 .menu-icon span { width: 26px; height: 3px; background: var(--text); border-radius: 10px; }
-
 .logo-group { display: flex; align-items: center; gap: 20px; }
-
-.app-logo { 
-    width: 85px; 
-    height: 85px; 
-    filter: drop-shadow(0 0 15px var(--logo-shadow));
-    transition: 0.4s ease;
-}
+.app-logo { width: 85px; height: 85px; filter: drop-shadow(0 0 15px var(--logo-shadow)); transition: 0.4s ease; }
 .app-logo:hover { transform: scale(1.05); }
-
 .brand-text { display: flex; flex-direction: column; }
 .brand-top { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; line-height: 1; }
 .brand-sub { font-size: 0.7rem; font-weight: 800; color: var(--accent); letter-spacing: 2px; margin-top: 4px; }
-
-.system-node { 
-    font-size: 0.75rem; 
-    color: var(--accent); 
-    background: rgba(0,0,0,0.05); 
-    padding: 8px 20px; 
-    border-radius: 100px; 
-    font-weight: 800; 
-    display: flex; 
-    align-items: center; 
-    gap: 10px;
-    border: 1px solid var(--glass-border);
-}
+.system-node { font-size: 0.75rem; color: var(--accent); background: rgba(0,0,0,0.05); padding: 8px 20px; border-radius: 100px; font-weight: 800; display: flex; align-items: center; gap: 10px; border: 1px solid var(--glass-border); }
 .pulse { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; animation: blink 1.5s infinite; }
-
 #chat-flow { flex: 1; overflow-y: auto; padding: 60px 20px; display: flex; flex-direction: column; gap: 30px; }
 .intro-box { max-width: 700px; margin: 80px auto; text-align: center; }
 .intro-box h2 { font-size: 4.5rem; margin-bottom: 15px; font-weight: 900; letter-spacing: -3px; }
 .intro-box p { color: var(--text-mute); font-size: 1.3rem; line-height: 1.6; }
-
-.message { 
-    max-width: 850px; 
-    width: fit-content; 
-    padding: 24px 32px; 
-    border-radius: 32px; 
-    line-height: 1.6; 
-    font-size: 1.15rem; 
-    animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-}
+.message { max-width: 850px; width: fit-content; padding: 24px 32px; border-radius: 32px; line-height: 1.6; font-size: 1.15rem; animation: pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
 .msg-bot { align-self: flex-start; background: var(--glass-bg); border: 1px solid var(--glass-border); border-bottom-left-radius: 6px; }
 .msg-user { align-self: flex-end; background: var(--msg-user); border-bottom-right-radius: 6px; color: var(--text); }
 body.theme-neon .msg-user { color: #ffffff; }
-
 .sources { margin-top: 20px; font-size: 0.85rem; color: var(--accent); padding-top: 15px; border-top: 1px solid var(--glass-border); font-weight: 700; }
-
 .hist-item { padding: 10px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 600; color: var(--text); background: var(--glass-bg); border: 1px solid var(--glass-border); cursor: pointer; margin-bottom: 6px; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hist-item:hover { border-color: var(--accent); color: var(--accent); }
-
 .input-float-wrap { padding: 40px 20px; width: 100%; max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
 .input-pill { width: 100%; display: flex; align-items: center; padding: 12px 15px; border-radius: 30px; transition: 0.4s; }
 .input-pill:focus-within { transform: translateY(-3px); border-color: var(--accent); }
-
 #query-input { flex: 1; background: none; border: none; outline: none; color: var(--text); padding: 15px 20px; font-size: 1.2rem; font-weight: 500; }
-#send-trigger { 
-    background: var(--accent); 
-    border: none; 
-    width: 58px; 
-    height: 58px; 
-    border-radius: 22px; 
-    color: var(--bg); 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    transition: 0.3s;
-}
+#send-trigger { background: var(--accent); border: none; width: 58px; height: 58px; border-radius: 22px; color: var(--bg); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
 #send-trigger:hover { transform: scale(1.1) rotate(-8deg); }
 #send-trigger svg { width: 26px; height: 26px; }
-
 .helper-text { font-size: 0.85rem; color: var(--text-mute); margin-top: 25px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
-
 @keyframes pop { from { opacity: 0; transform: scale(0.9) translateY(30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 @keyframes blink { 0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--accent); } 50% { opacity: 0.3; } }
-
 #chat-flow::-webkit-scrollbar { width: 6px; }
 #chat-flow::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
     </style>
 </head>
 <body class="theme-standard">
-
     <div id="sidebar-blur"></div>
     <nav id="sidebar" class="glass">
         <div class="sidebar-header">
@@ -216,10 +97,10 @@ body.theme-neon .msg-user { color: #ffffff; }
             <div class="menu-item">
                 <label>Görünüm Teması</label>
                 <div class="theme-btns">
-                    <button onclick="setTheme('neon')" class="t-btn btn-neon">Değer Max (Fosfor)</button>
-                    <button onclick="setTheme('standard')" class="t-btn btn-std">Cyber (Default)</button>
-                    <button onclick="setTheme('grey')" class="t-btn btn-gry">Platin</button>
-                    <button onclick="setTheme('soft-dark')" class="t-btn btn-drk">Obsidyen</button>
+                    <button onclick="setTheme('neon')" class="t-btn">Değer Max (Fosfor)</button>
+                    <button onclick="setTheme('standard')" class="t-btn">Cyber (Default)</button>
+                    <button onclick="setTheme('grey')" class="t-btn">Platin</button>
+                    <button onclick="setTheme('soft-dark')" class="t-btn">Obsidyen</button>
                 </div>
             </div>
             <div class="menu-item">
@@ -233,9 +114,7 @@ body.theme-neon .msg-user { color: #ffffff; }
     <div class="main-screen">
         <header class="banner glass">
             <div class="banner-left">
-                <button id="menu-toggle" class="menu-icon">
-                    <span></span><span></span>
-                </button>
+                <button id="menu-toggle" class="menu-icon"><span></span><span></span></button>
                 <div class="logo-group">
                     <div class="app-logo">
                         <svg viewBox="0 0 3272 3272">
@@ -257,10 +136,7 @@ body.theme-neon .msg-user { color: #ffffff; }
                 </div>
             </div>
             <div class="banner-right">
-                <div class="system-node">
-                    <span class="pulse"></span>
-                    SİSTEM ÇEVRİMİÇİ
-                </div>
+                <div class="system-node"><span class="pulse"></span>SİSTEM ÇEVRİMİÇİ</div>
             </div>
         </header>
 
@@ -282,9 +158,144 @@ body.theme-neon .msg-user { color: #ffffff; }
         </div>
     </div>
 
-    <script>
+<script>
 const API_KEY = "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";
 const API_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+// ── TÜM DEĞERLENDİRMELER BURADA GÖMÜLÜ ──
+const KUTUPHANE = [
+  {
+    ad: "Arkadaşıma veda",
+    anahtar: ["arkadaşıma veda", "arkadasima veda"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta Atatürk'ün yakın arkadaşı olan Salih Bozok'un hayatı ve Atatürk'le olan maceraları yer almaktadır. Ayrıca bu kitap hem dostluğun simgesi hem de vatan bağlılığının bir göstergesi bence. 
+Şimdi biraz da kitabın içinden bahsetmek istiyorum. Yıl 1887'de Selanik'te Mustafa Kemal'in babası Ali Rıza Bey karısı Zübeyde Hanım'a çok önemli bir şey anlatmaya çalışıyordu. Karısına biraz yüksek sesle şunları dedi. "Zübeyde, Mustafa'yı mahalle mektebine vermeyelim, çağdaş bir okulda ilim, fen görsün." Zübeyde anne ise kararlıydı, illa Mustafa'yı mahalledeki okulda Kuran öğretip Hoca yapacaktı. Babası subay olsun deyince Zübeyde anne ağlamaya başladı. Çünkü oğlunu üç tane ölen oğlundan sonra toprağa vermek istemiyordu. Ali Rıza Bey en sonunda kabul etti. Mustafa ise hayal kırıklığına uğradı. Ali Rıza Bey'in çok sıkıntısı vardı. Bu sıkıntılar onu verem etmişti. Bir iki yıl sonra Ali Rıza Bey öldü ve Zübeyde anne dul kaldı. Ama ölmeden önce Mustafa okula gitti ve orda Salih Bozok ile ders görmeye başladı. Birkaç gün sonra benim kitapta gördüğüm en büyük dostluk olaylarından biri yaşandı. Sınıfta ders başlamak üzere ve herkes koşuşturuyor. Salih Mustafa'yı yakalayacakken hocanın rahlesini deviriyor. Tam bu sırada hoca sınıfa giriyor. Tabi sınıftakiler ayak seslerini duyunca yerlerine kaçışıyor. Hoca gelip rahlenin devrik olduğunu gördüğünde ise kim yaptı bunu diye hiddetle soruyor. Salih çok korkuyordu ve bu yüzden de söyleyemiyor. Mustafa ise ayağa fırlıyor ve ben yaptım diyor. Hoca Mustafa'yı dışarı çıkarıyor ve sonra sınıf güçlü bir falaka sesi duyuyor. 
+Ben bu kitabı çok beğendim. Kitabın sonu ise gerçekten üzücü. Tabi çocuk ve herkes için. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Avcumdaki kelebek",
+    anahtar: ["avcumdaki kelebek", "avucumdaki kelebek"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta insanın kendini geliştirmesi için bazı söz veya hikayeler yer almaktadır. Bu kitap ayrıca benim ilk kişisel gelişim kitaplarımdan biriydi ve beğendiğimi söyleyebilirim. Okumak isteyenler için kitabın yazarının birçok kişisel gelişim kitabı var.
+Şimdi biraz da kitaptan bahsedeceğim. Kitabın başlığı Avucumuzdaki Kelebek ve ben bu başlığı beğendim. Yazar ise kitapta neden başlığın böyle olduğunu anlatıyor. Şimdi size o öyküyü anlatacağım. Zamanın birinde iki kız kardeş varmış. Etraflarındaki bilgi onlara yetmeyince anneleri onları dağdaki bilgeye götürmüş. Kızlar sorularını sormuşlar hepsine ise doğru cevap vermiş. Tabi sevinmişler ama bir süre sonra bilgenin bulamayacağı bir soru aramaya koyulmuşlar. Kızlardan biri buldum demiş. Avucunun içine bir kelebek koyup canlı cansız mı diye soracakmış. Ne derse ya öldürecek ya serbest bırakacakmış. Hemen bilgeye sormuş. Bilge ise şu cevabı vermiş: "Senin ellerinde." Bu öykü kitapta beğendiğim öyküler arasında. Şimdi size kitaptan başka bir beğendiğim bölümü anlatacağım. Adı ise "Bin aynalı tapınak" imiş. Hindistan'da yüksek bir dağına yapılmış. Bin aynalı tapınak adlı görkemli bir tapınak varmış. Günlerden bir gün bir köpek dağa tırmanmış. Tapınağın içine girip tapınağın bin aynalı salonuna girdiğinde ise bin tane köpek görüp korkudan tüylerini kabartmış ve dişlerini göstermiş. Bin köpek de kuyruklarını kaldırıp aynı şeyleri yapınca köpek paniğe kapılmış, en son da çareyi kaçmakta bulmuş. Bir süre sonra brassy bir köpek tapınağa tırmanmış. Merdivenlerden çıkıp tapınağa girmiş. Bin aynalı salona girdiğinde köpekleri görünce mutlu olmuş. Tabi bin tanesi de mutlu. O köpek tapınaktan çıktıktan sonra diğer bütün köpeklerin mutlu olduğuna inanmış. Diğeri ise mutsuz.
+Ben bu kitabı çok beğendim. İnsanın hayatına faydaları olur. Ama kitabın kapağını çok beğenmedim. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Göğü yere indirelim",
+    anahtar: ["göğü yere indirelim", "gogu yere indirelim"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta yaramaz bir çocuk olan Deniz'in ailesinin isteğiyle Afrika'da bir çocukla yer değiştirmesini ve bu durumdaki maceraları anlatmaktadır. Ayrıca dostluğun önemini gösteriyor bence.
+Şimdi biraz da kitabın içinden bahsetmek istiyorum. Bahar Hanım (yeni öğretmen) ilk olarak Deniz'in ailesine bu programı teklif ediyor, ailesi ise kabul ediyor. Ayrıca öğretmen her ne olursa olsun orada güvende olacağının garantisini de veriyor. Belgeler hazır edildikten sonra babası yani İlker Bey tekrar müdürün karşısına çıkıyor ve müdür kaydının kalacağını söylüyor. Birkaç hafta böyle güzel geçse de bir gün İlker Bey eve endişeli geliyor. Hemen Aslı'ya olanları anlatıyor. Programda bir karışıklık olduğu ve ülkelerde kontenjanlar dolduğu için Deniz Afrika'da kabilede yaşayan bir çocukla eşleşiyor. İlker ise buna karşı çıktığını fakat anlaşma gereği hiçbir şeyin yapılamayacağını söylüyor. Bahar Hanım'la konuştuktan sonra işleri biraz daha rahatlıyor. Deniz'e açıkladıklarında ise Deniz bu durumu çok normal karşılıyor. Biraz vakit geçtikten sonra ayrılık zamanı geliyor ve Deniz'i uçağa bindiriyorlar. Bu yolculuk Deniz'in ilk uçak yolculuğu oluyor. Etrafına baktığında ise ağacın siyah ten renkli olduğunu görüyor. Uçak yolculuğu bittiğinde Deniz bir hanımefendiye "Afrika burası mı?" diye soruyor ama tabii ki de cevap farklı dilde. Tam bu sırada aşağıdan biri Deniz'e sesleniyor. Deniz ise onun programdaki ona bakacak adam olduğunu anlıyor. Adam hemen kendini tanıtıyor. Deniz adamın Türkçe konuşmasına şaşırıyor ve sorduğunda bazılarının burada Türkçe bildiğini söylüyor. Deniz bu ülkenin hayalinden farklı olduğunu görüyor. Deniz bir süre sonra acıkıyor. Adam ise ona timsah eti veriyor. Tabii ki Deniz bunu yemiyor. Adam ona şehrini anlatıyor ve ona kokkuşunu göreceğini söylüyor. Deniz ise kitapta bir şekilde kokkuşunu sönüyor.
+Ben bu kitabı çok beğendim. Bazı arkadaş gruplarına sinir olsam da yine de güzeldi. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Kara rüzgar",
+    anahtar: ["kara rüzgar", "kara ruzgar"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta Kara ve Alec'in yaşadığı maceralar anlatılmaktadır. Bu, bizim ortak kitabımızdı ve beğenerek okudum. Ayrıca kitabın başlığını çok beğendim. Bana göre içeriğiyle bayağı uyumlu olmuş. 
+Kitabın içinden bahsedecek olursak; Hindistan'dan eve dönecek olan Alec Drake adlı gemiyle yola koyuldu. Ama hiç beklenmedik fırtına onları sarsmıştı. Biraz zaman sonra gemi batıyordu. Alec'in aklına o an hemen Kara geldi ve onu ahırdan çıkardı. Gemi tam olarak batınca Kara'ya tutunmaya karar verdi. Gece boyunca yol aldılar. Sonunda kara görünmüştü, tam değil. Alec adaya gitti ama susuzluktan ölüyordu. Kara'nın kaynak izlerine bakmayı denedi, izler adanın içine gidiyordu. Alec tepeden adayı gözetledi ve bir pınar gördü. Hemen oradan su içti, Alec ertesi sabah çok aç uyandı ama yemek bulamadı ve aramaya koyuldu. İlerleyen saatlerde daha çok acıktı, hatta Kara'yı bile yemeyi düşündü ama tabii ki de böyle bir şey yapmadı. Alec yine dolaşırken yosunumu bir şey fark etti ve bunun yenilebilir olduğunu anladı. Ceplerine doldurdu ve yedi. Ertesi sabah yine yosun toplamaya gitti ve o gün Kara'ya, binmeye karar verdi ama binince çok şaşırmıştı, hiç bu kadar güzel at görmemişti. At çok hızlıydı. Günler geçmişti, Alec'in umudu azalmış gibiydi ama adada bir ses duydu. Bir başka biri var mı bu adada diye sordular. Alec, atının gemi demirlemişti. Adamlar hemen Alec'i aldılar. Ona başka biri, var mı bu adada diye sordular. Alec, "Kara" diye cevap verdi. Adamlar inanmadılar. Tam Kara'sız gitmek üzereydiler ki Alec hemen Kara'yı almaya koyuldu. Bu sefer de çok vahşi derler bile sonunda Kara'yı aldılar. Kurtulmuşlardı. Hatta ailesi onlara telgraf bile göndermişti. Alec ve Kara yavaş yavaş da olsa eve dönmüşler ve kurtulmuşlardı. Ayrıca kaptan ve arkadaşlarına teşekkür etmeyi de unutmamıştı ama bu ikilinin yaşayacağı daha çok macera vardı.`
+      }
+    ]
+  },
+  {
+    ad: "Kayıp balina",
+    anahtar: ["kayıp balina", "kayip balina"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta Rio adındaki küçük bir çocuğun büyükannesinde yaşadığı maceralar anlatılmaktadır. Açıkçası ben kitabın başlığını yani "Kayıp Balina"yı çok sade buldum. 
+Şimdi biraz da kitaptan bahsetmek istiyorum. Rio havalimanının yolcu salonuna adım attığında ilk dikkatini çeken şey gürültü oldu. İkinci ise anneannesi. Onu son görüşünden tam beş yıl geçmişti. Etrafına bakarken torununu fark etmesi biraz zaman almıştı. Anneannesi Rio'nun burada olabildiği için çok mutluydu. Sonra Rio'ya sarıldı. Rio anneannesinde kalacaktı. Bu yüzden Rio'ya tuhaf geliyordu. Rio anneannesinin anneanne olmaktan oldukça uzak biri olduğunu düşünüyordu. Bu yüzden ona adı olan Fran diye seslenmeye karar verdi. Anneannesi Rio'yu arabaya bindirdi. Anneanne Rio'nun huzursuzluğunu hissetmişti. Bu yüzden Rio'ya annesi için üzgün olduğunu söyledi. Rio'nun aniden gözleri doldu. Gidecekleri yer yani California Rio'nun annesinin doğup büyüdüğü yerdi. Hatta Rio bebekken annesi onu buraya getirmişti. Fakat o kadar uzun zaman önceydi ki Rio hiçbir şey hatırlamıyordu. Rio araba yolculuğunun yarısında uyuyakalmış olmalıydı. Anneannesi Okyanus Koyu'na geldiklerini söyledi. Anneannesi 3 katlı bir binada yaşıyordu. Okyanusun sesi bir kükreme gibi geliyordu. Rio yemek yiyip biraz oturdu ve yatma saati gelmişti. Anneannesi ona odasını gösterdi. Geniş kubbeli bir tavan arasıydı. Oda temiz ve ferah kokuyordu. Anneannesi ona burasının annesinin odası olduğunu söyleyince Rio çok şaşırdı. Anneannesi yine annesinin hasta olduğu için özür diledi Rio ise öfkeyle onun iyileşeceğini söyledi. 
+Ben bu kitabı çok beğendim bir macera romanı derim. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Kınalı serçe",
+    anahtar: ["kınalı serçe", "kinali serce"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta Osmanlı Devleti döneminde anne babasız sadece lalasıyla (yani şehzadeleri eğiten öğretmen) Topkapı Sarayı'nda yaşayan bir çocuğun hayatı anlatılmaktadır. Ayrıca bu kitap 7 yıl Topkapı Müzesi müdürlüğünü üstlenen Kıymetli İlber Ortaylı ve çok fazla kitabını okuduğum Şermin Yaşar tarafından yazılmıştır. Ben bu ikilinin "Cumhuriyet'in ilk sabahı" adlı kitabını okumuş ve değerlendirmesini de yazmıştım. 
+Şimdi biraz da kitabın içinden bahsetmek istiyorum. 1840'lı yıllarda Topkapı Sarayı'nda yaşayan bir şamar oğlanı (Lala'nın şehzade hata yaptığında şehzadeye vuramayacağı için şamar oğlana vurması) vardı. Lalası tabi ki ona vurmazdı çünkü o yetimdi ve Lala onun genç yaşta ölen babasının arkadaşı ve üvey babasıydı. Şamar oğlan Kınalı Serçe'yi çok merak ederdi. Öğrenmesi ise baya uzun sürdü, ayrıca şamar oğlan bir yerde sarayın yıkılacağını da duymuştu ve çok endişeliydi. Ama bu endişesi o kadar da uzun sürmedi bunun gerçek olmadığını bir şekilde anladı. Bir bölümde ise sarayda kim olduğunu bilmeden padişahla konuşmuştu. Padişah o zaman halk gibi giyindiği için giyim tarzından da anlamamıştı. Bu olaydan sonra ise onun şamar oğlanlığı son bulmuştu. Bu bölüm benim sevdiğim bir bölümdü. 
+Ben bu kitabı çok beğendim. İlk başta söylediğim gibi bu ikilinin kitabından "Cumhuriyet'in ilk sabahı" kitabını da beğenmiştim ama bunu daha çok sevdiğimi söyleyebilirim. Bu değerlendirmem de bitti, diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Peygamberimize götüren navigasyon",
+    anahtar: ["peygamberimize götüren navigasyon", "peygamberimize goturen navigasyon"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta Peygamberimizin hayatını öğrenmek isteyen bir çocuk ve öğrenmesinde yardımcı olan Zekatron adında saatindeki bir yapay zekanın maceraları anlatılmaktadır. Bu kitap bana bir yarışma için verilmişti, güzeldi ama tam 4 veya 3. sınıfların okuyacağı bir kitap olduğunu söyleyebilirim. 
+Şimdi biraz da kitabın içinden bahsetmek istiyorum. Çocuk evdeyken bir anda saati ötüyor, ekrana baktığında ise bunun bir hadisi şerif olduğunu görüyor. Tabi ki bunun ekrana nasıl geldiğini anlamıyor. Sonra saati biraz kurcaladığında indirdiği navigasyon programının Peygamberimizin hayatına götüren bir navigasyon programı olduğunu anlıyor. Bu sırada telefondan, saatten bir konuşma sesi geliyor, kimden geldiğini anlamıyor ama ses kendisinin Zekatron adında bir yapay zeka olduğunu söylüyor. Ayrıca yüklediği programla birlikte geldiğini de ekliyor. Bu diyalogdan sonra Hz. Muhammed'in hadislerini sınıftaki herkes tam olarak uygulasa ne olacağını konuşuyorlar. Sınıftaki herkes uygulasa hiçbir sorun olmaz kanaatine varıyorlar. Tüm ülke uygulasa o zaman ülkenin çok huzurlu bir ülke olacağını söylüyorlar. Bence de hemen hemen herkes için çok mutlu ve huzurlu bir ülke olurdu. Çocuk bu uygulamanın sadece 100 kişide olduğunu öğreniyor ve farkında olmadan da nasipli iş yaptığı için hayret ediyor. İkilinin konuşması ise Zekatron'un yorulması (yani şarjının bitmesi) ile son buluyor. 
+Ben bu kitabı beğendim ama başta dediğim gibi ilkokul düzeyi. Yazarın adını da hiç duymadım. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Sisin sakladıkları",
+    anahtar: ["sisin sakladıkları", "sisin sakladiklari"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta İlay adlı kızın köye gönderilmesi ve o kızın köyde yaşadığı maceralar anlatılmaktadır. Bu kitap 2 serili bir kitap şimdi ben size ilkini anlatacağım. Ayrıca kitabın başlığını beğendiğimi söyleyebilirim. 
+Bir pazar sabahı Nilgün Hanım (yani İlay'ın annesi) kahvaltıda İlay'ın sevdiği şeyleri hazırlamıştı. Nilgün Hanım eşiyle boşanacaklarını İlay'a söylediği gün de böyle güzel kahvaltı vardı bu yüzden İlay bir şey olduğunu düşündü. Çünkü annesinin tayini falan çıksa hem arkadaşları hem de Tayfun adlı sevdiği kişiden ayrılacağı için çok üzülürdü. Okulu bitmişti ve rahattı. Ama annesi en sonunda kötü haberi verdi işi olduğu için onu köye teyzesinin yanına bırakacaktı. İlay çok itiraz ediyordu ve çok sinirliydi. İlay bu sinirden dolayı dışarı çıktı arkadaşıyla sinemaya gidecekti. İlay bir kafede oturdu çok geçmeden arkadaşı geldi. Sevcan'ın bir kötü haberi vardı ama söylemesi zordu en sonunda Tayfun'un başka bir kızla çıktığını ve onu bıraktığını söyledi. İlay kulaklarına inanamadı. Yalan olduğunu düşündü. Sevcan ise çocuğu aradı ve gerçeği öğrendi. Sinemaya gideceklerdi ama İlay gitmedi. Eve döndü ve Tayfun'dan kalan kolyeyi aşağı attı. İlay karar verdi köye gidecekti. 
+Ben bu kitabı çok beğendim. Yazarın kitaplarını zaten seviyorum. Bunun ikincisini de en kısa zamanda okuyacağım. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Sol ayağım",
+    anahtar: ["sol ayağım", "sol ayagim"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta sadece sol ayağıyla bir şeyler yapabilen bir beyin felci kurbanının yaşam öyküsü anlatılıyor. Ben bu kitabı çok beğendim Ayrıca başlığı gayet güzel olmuş. 
+Şimdi biraz kitabın içinden bahsetmek istiyorum. 1932 yılında bir çocuk doğdu. Annesinin onunla ilgili sorunu gördüğü zaman çocuk 4 aylıktı ve başı arkaya düşüyordu. Akrabaları çocuğun gerizekalı olduğunu söylüyordu ama annesi böyle düşünmüyordu. Çocuk 5 yaşına gelmişti ama hala bir zeka belirtisi gösteremiyordu. Sonra birden her şey değişti. Bir köşede otururken Mona ve Paddy sarı bir tebeşirle okul işlemleri yapıyorlardı. Çocuğun dikkatini tebeşir çekmişti. Bir şekilde kız kardeşinin eline uzanıp tebeşiri aldı. Tabi ki sol ayağıyla. Sonra ise tahtaya karalama yaptı. Başını kaldırdığında ise herkesin ona baktığını gördü. Annesi çok heyecanlanmıştı. Annesi ona A harfini yazdırtmaya çalışıyordu. Yapamamıştı belki ilk denemesinde ama iyi ilerlemişti. Sonunda A harfini çizdi ve başardı. Annesi A harfini öğrettikten sonra kendi adının baş harfini yazmayı da öğretti büyük bir çabayla C.B (yani Christy Brown) yazıyordu. Sonra ise annesi ona bütün alfabeyi öğretti. Chris anlaşılır bir biçimde konuşamasa bile hatta aile üyelerinin iyi kötü anlayabileceği homurtulu bir dili vardı. Zaman geçtikçe sol ayağına daha fazla bağlandı. Doktor eve gelmişti ama Chris için değil o sırada onu ayağıyla yazarken görünce çok şaşırdı ben de şaşırırdım çünkü bu bence bir başarı hikayesi. 
+Bu kitabı gerçekten çok beğendim. Yazarın kendi öyküsü olması da iyi. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Şampiyon çobanla başarmaya hazırmısın",
+    anahtar: ["şampiyon çobanla başarmaya hazırmısın", "sampiyon cobanla basarmaya hazirmisin", "şampiyon çoban", "sampiyon coban"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu kitapta deneme sınavlarına giren Cemre'nin denemelerde başarısız olurken sınavda başarılı olması anlatılıyor. Kitabın başlığı güzel ama biraz sade olmuş. Ayrıca kitabın yazarının ismini hiç duymamıştım ama kitap güzeldi.
+Şimdi biraz da kitaptan bahsetmek istiyorum. Cemre artık bıkmıştı. Herkesin çok bencil ve anlayışsız olduğunu düşünüyordu. Eve o gün Suzan teyzesi gelmişti, Cemre onu çok sevmiyordu. Suzan Hanım hep kızı Büşra'yı anlatıyordu hatta Cemre bu duruma Büşra reklamı demişti ki bence doğruydu. Annesinin ise oturup o kadını dinlemesine şaşırıyordu. Ayrıca son zamanlarda Cemre annesinin onu anlamadığını düşünüyordu. Şimdi yine Cemre'nin beklemediği an gelmişti, annesi Cemre'ye deneme sonuçlarını soruyordu. Yalan söylemeyi sevmediği için söylemedi ve sessiz kaldı. Annesi ise onun kötü sonuç aldığını anlamıştı ve ona kızdı. İkisi bu kızma sonucu tartıştılar, annesi neyi yanlış yaptığını düşünüyordu. Annesi Cemre'nin başarılı olmasını istiyor ama bunu isterken aynı zamanda Cemre'yi de kırıyordu. Derste hocaları deneme sınavını yapamıyor diye Cemre ve arkadaşı Melis'e kızmıştı ama Cemre'yi bu durumdan kurtaracak biri vardı hem de bir çoban.
+Ben bu kitabı çok beğendim, eğitici bir kitap. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  },
+  {
+    ad: "Yüzüklerin efendisi",
+    anahtar: ["yüzüklerin efendisi", "yuzuklerin efendisi"],
+    degerlendirmeler: [
+      {
+        yazar: "Ozan Nigar",
+        icerik: `Bu filmde yani Yüzüklerin Efendisi'nde yüzük ve yaşanan maceralar anlatılmaktadır. Ben filmin adını beğendim. Ayrıca film de konu bakımından iyiydi. 
+Şimdi biraz da filmin içinden bahsetmek istiyorum. Kitapta Frodo adındaki bir hobbit yüzüğü yok etmekle görevlendiriliyor. Ama yok etmeye çalışırken önüne engeller çıkıyor. Tabi bu yüzden engellerle savaşmak zorunda kalıyor. Frodo ilk bu görevi yapmak istemeyip Gandalf'ın yapmasını istese de Gandalf kabul etmiyor ama Frodo'ya yardım ediyor. Çünkü Sauron dünyayı ele geçirecektir. Frodo'ya Gandalf ile yolda başka insan, Elf veya cüce yardım eder. Benim en sevdiğim Elf'ti. Bu varlıklarla birlikte bu yolculuk kurulur ve yolculuk başlanır. Şimdi yüzük kardeşliği başlar ve bu yolculuk anlatacağım. Şimdi bu yolculukta Gandalf'ın düğünü karşılarına çok büyük ve öteden bir yaratık çıkar. Bu çok korkutucu yaratık tabi ki bizim ekibe saldırır. Saldırınca kadar ekip köprüye dahi yamıyordur ama yaratık da kaçamışlardır. Bu yüzden Gandalf diğerlerine kaçmalarını söyler. Gandalf asasıyla bir şekilde kapıyı kırar. Tabi düşüp öldüğünü sanır ama işler hiç öyle değildir. Canavar ölmeden önce Kırbaç Gandalf'ı aşağı doğru düşürür. Kırbaç Gandalf ise çekilir ve düşer. Kırbaç kardeşliğinden kimse bu düşüşü engelleyemez. 
+Ben bu filmi bayağı beğendim hatta 2. sine de başladım. Bence filmi, bayağı eski olsa bile özellikle kılıç yarattığı mod. Hatta biraz baktığımda bu filmin bir animasyon filmi olarak da çok daha eskiden yayınlandığını gördüm. Kitabın ise daha çok yıllar önce olduğunu. Diğer değerlendirmelerde görüşürüz.`
+      }
+    ]
+  }
+];
 
 const chatFlow = document.getElementById('chat-flow');
 const queryInput = document.getElementById('query-input');
@@ -297,215 +308,94 @@ document.getElementById('menu-toggle').onclick = () => { sidebar.classList.add('
 document.getElementById('close-menu').onclick = () => { sidebar.classList.remove('active'); sidebarBlur.classList.remove('active'); };
 sidebarBlur.onclick = () => { sidebar.classList.remove('active'); sidebarBlur.classList.remove('active'); };
 
-function setTheme(t) {
-    document.body.className = 'theme-' + t;
-    localStorage.setItem('yz_theme_v3', t);
+function setTheme(t) { document.body.className = 'theme-' + t; localStorage.setItem('yz_theme_v3', t); }
+
+function normalize(str) {
+    return str.toLocaleLowerCase('tr-TR')
+        .replace(/ğ/g,'g').replace(/ı/g,'i').replace(/ş/g,'s')
+        .replace(/ç/g,'c').replace(/ö/g,'o').replace(/ü/g,'u')
+        .replace(/ /g,'-');
 }
 
 function appendMessage(text, isBot = true, sources = []) {
     const intro = document.querySelector('.intro-box');
     if (intro) intro.remove();
-
     const d = document.createElement('div');
     d.className = `message ${isBot ? 'msg-bot' : 'msg-user'}`;
     let html = `<div>${text}</div>`;
-    if (sources.length > 0) {
-        html += `<div class="sources">KAYNAK DOSYALAR: ${sources.join(', ')}</div>`;
-    }
+    if (sources.length > 0) html += `<div class="sources">KAYNAK: ${sources.join(', ')}</div>`;
     d.innerHTML = html;
     chatFlow.appendChild(d);
     chatFlow.scrollTop = chatFlow.scrollHeight;
 }
 
-// Türkçe karakterleri ASCII'ye normalize et (klasör/dosya yolları için)
-function normalize(str) {
-    return str
-        .toLocaleLowerCase('tr-TR')
-        .replace(/ğ/g, 'g')
-        .replace(/ı/g, 'i')
-        .replace(/ş/g, 's')
-        .replace(/ç/g, 'c')
-        .replace(/ö/g, 'o')
-        .replace(/ü/g, 'u')
-        .replace(/ /g, '-');
-}
-
-// Klasör adı: sadece boşlukları tire yap, Türkçe karakterler kalabilir
-function folderName(str) {
-    return str
-        .toLocaleLowerCase('tr-TR')
-        .replace(/ /g, '-');
-}
-
-async function callAnalyst(question, dataSet) {
-    const systemInstruction = `
-    Senin adın Değer YZ. Yapımcın: Hasan Eymen Kartal.
-    KESİN KURALLAR:
-    1. Sadece sana verilen "METİNLER" üzerinden cevap ver. Kendi bilgilerini asla kullanma.
-    2. Metinlerde cevap yoksa tam olarak şunu söyle: "Bu bilgiye kütüphanemdeki değerlendirmelerden ulaşamadım, kitap veya film hakkında başka bir şey sorabilirsin."
-    3. Sadece kitap/film analizi yap. Metinlerde ne geçiyorsa onu aktar.
-    METİNLER:
-    ${dataSet.map(d => `[Yazar: ${d.author}]: ${d.content}`).join("\n\n")}
-    `;
-
-    try {
-        const r = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "llama-3.1-8b-instant",
-                messages: [{ role: "system", content: systemInstruction }, { role: "user", content: question }],
-                temperature: 0.0
-            })
-        });
-        const d = await r.json();
-        if (d.error) return `HATA: ${d.error.message}`;
-        return d.choices[0].message.content;
-    } catch (e) { return "HATA: Analiz motoru bağlantısı koptu. " + e.message; }
-}
-
-async function callChat(question) {
-    const systemInstruction = `
-    Senin adın Değer YZ. Yapımcın: Hasan Eymen Kartal.
-    Sen samimi ve kısa cevap veren bir sohbet asistanısın.
-    Kullanıcıyla Türkçe sohbet et. Selamlaşma, hal hatır, genel sorular gibi şeylere cevap verebilirsin.
-    Ama şunu unutma: Kitap veya film soruları gelirse "Bu konuda sana özel kütüphanemden cevap verebilirim, kitap adını söyle!" de.
-    Başka hiçbir konuda uzman tavsiyesi verme (tıp, hukuk vb.).
-    `;
-    try {
-        const r = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
-            body: JSON.stringify({
-                model: "llama-3.1-8b-instant",
-                messages: [{ role: "system", content: systemInstruction }, { role: "user", content: question }],
-                temperature: 0.7
-            })
-        });
-        const d = await r.json();
-        if (d.error) return `HATA: ${d.error.message}`;
-        return d.choices[0].message.content;
-    } catch (e) { return "HATA: Bağlantı koptu. " + e.message; }
+async function callAPI(messages, temp = 0.0) {
+    const r = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "llama-3.1-8b-instant", messages, temperature: temp })
+    });
+    const d = await r.json();
+    if (d.error) return `HATA: ${d.error.message}`;
+    return d.choices[0].message.content;
 }
 
 async function processSearch(q) {
     const lowQ = q.toLocaleLowerCase('tr-TR');
     const normQ = normalize(q);
 
-    // Sabit cevaplar
-    if (lowQ.includes("kimsin") || lowQ.includes("adin ne") || normQ.includes("kimsin") || normQ.includes("adin ne")) 
+    if (lowQ.includes("kimsin") || normQ.includes("kimsin"))
         return appendMessage("Ben <b>Değer YZ</b>. Hasan Eymen Kartal'ın özel kütüphane analiz asistanıyım.");
-    if (lowQ.includes("kim yapti") || lowQ.includes("sahibin") || normQ.includes("kim yapti") || normQ.includes("sahibin")) 
+    if (lowQ.includes("kim yaptı") || lowQ.includes("kim yapti") || normQ.includes("kim-yapti"))
         return appendMessage("Ben <b>Hasan Eymen Kartal</b> tarafından kodlandım.");
 
-    // index.json yükle
-    let res;
-    try { res = await fetch('index.json'); }
-    catch (e) { return appendMessage("⚠️ <b>Bağlantı Hatası:</b> <code>index.json</code> dosyasına ulaşılamadı."); }
+    // Kitap eşleştir
+    const book = KUTUPHANE.find(k =>
+        k.anahtar.some(a => lowQ.includes(a) || normQ.includes(normalize(a)))
+    );
 
-    if (!res.ok) return appendMessage(`⚠️ <b>Dosya Bulunamadı (${res.status}):</b> <code>index.json</code> sunucuda mevcut değil.`);
-
-    const _buf = await res.arrayBuffer();
-    const _bytes = new Uint8Array(_buf);
-    let rawText = new TextDecoder('utf-8').decode(_bytes);
-    if (rawText.includes('Ã')) {
-        try {
-            const _latin = new TextDecoder('iso-8859-1').decode(_bytes);
-            const _reenc = new TextEncoder().encode(_latin);
-            rawText = new TextDecoder('utf-8').decode(_reenc);
-        } catch(e) {}
-    }
-
-    if (!rawText || rawText.trim() === "") return appendMessage('⚠️ <b>JSON Boş.</b>');
-
-    let data;
-    try { data = JSON.parse(rawText); }
-    catch (e) { return appendMessage(`⚠️ <b>JSON Format Hatası:</b> ${e.message}`); }
-
-    if (!data.kütüphane || !Array.isArray(data.kütüphane)) {
-        return appendMessage('⚠️ <b>Yapı Hatası:</b> <code>"kütüphane"</code> dizisi bulunamadı.');
-    }
-
-    // Kitap eşleştirme — hem normalize hem orijinal ile dene
-    const book = data.kütüphane.find(k => {
-        const normK = normalize(k.ad);
-        return normQ.includes(normK) || lowQ.includes(k.ad.toLocaleLowerCase('tr-TR'));
-    });
-
-    // Kitap bulunamadıysa → sohbet moduna geç
     if (!book) {
-        const reply = await callChat(q);
-        return appendMessage(reply);
-    }
-
-    let sortedList = [
-        ...book.yazarlar.filter(a => a.toLocaleLowerCase('tr-TR').includes("(ö)")),
-        ...book.yazarlar.filter(a => !a.toLocaleLowerCase('tr-TR').includes("(ö)"))
-    ];
-
-    let docs = [];
-    let authNames = [];
-
-    for (const auth of sortedList) {
+        // Sohbet modu
         try {
-            const folder = folderName(book.ad);
-            const file = auth;
-            const url = `degerlendirmeler/${folder}/${file}.txt`;
-            const fRes = await fetch(encodeURI(url));
-            if (fRes.ok) {
-                docs.push({ author: auth, content: await fRes.text() });
-                authNames.push(auth);
-            }
-        } catch (e) {}
+            const reply = await callAPI([
+                { role: "system", content: "Senin adın Değer YZ. Yapımcın Hasan Eymen Kartal. Samimi, kısa cevap veren Türkçe sohbet asistanısın. Kitap/film soruları gelirse 'Hangi kitabı sormak istiyorsun, söyle sana kütüphanemden cevap vereyim!' de. Tıp/hukuk gibi konularda uzman tavsiyesi verme." },
+                { role: "user", content: q }
+            ], 0.7);
+            appendMessage(reply);
+        } catch(e) { appendMessage("Bağlantı hatası: " + e.message); }
+        return;
     }
 
-    if (authNames.length > 0) {
-        appendMessage("<i>Analiz motoru dosyaları tarıyor...</i>");
-        const result = await callAnalyst(q, docs);
-        appendMessage(result, true, authNames);
+    const docs = book.degerlendirmeler;
+    const dataSet = docs.map(d => `[Yazar: ${d.yazar}]: ${d.icerik}`).join("\n\n");
+
+    appendMessage("<i>Analiz motoru çalışıyor...</i>");
+
+    try {
+        const result = await callAPI([
+            { role: "system", content: `Senin adın Değer YZ. Yapımcın: Hasan Eymen Kartal.\nKESİN KURALLAR:\n1. Sadece aşağıdaki METİNLER üzerinden cevap ver, kendi bilgini kullanma.\n2. Metinlerde cevap yoksa: "Bu bilgiye kütüphanemdeki değerlendirmelerden ulaşamadım, başka bir şey sorabilirsin."\n3. Sadece kitap/film analizi yap.\nMETİNLER:\n${dataSet}` },
+            { role: "user", content: q }
+        ]);
+        appendMessage(result, true, docs.map(d => d.yazar));
         saveToHistory(q);
-    } else {
-        appendMessage(`⚠️ Değerlendirme dosyası bulunamadı. <code>degerlendirmeler/${folderName(book.ad)}/</code> klasörünü kontrol et.`);
-    }
+    } catch(e) { appendMessage("HATA: " + e.message); }
 }
 
 function saveToHistory(q) {
     let hist = JSON.parse(localStorage.getItem('yz_history_v3')) || [];
-    if (!hist.includes(q)) {
-        hist.unshift(q);
-        if (hist.length > 12) hist.pop();
-        localStorage.setItem('yz_history_v3', JSON.stringify(hist));
-        renderHistory();
-    }
+    if (!hist.includes(q)) { hist.unshift(q); if (hist.length > 12) hist.pop(); localStorage.setItem('yz_history_v3', JSON.stringify(hist)); renderHistory(); }
 }
 
 function renderHistory() {
     let hist = JSON.parse(localStorage.getItem('yz_history_v3')) || [];
-    historyBox.innerHTML = hist.map((i, idx) => `<div class="hist-item" data-idx="${idx}">${i.substring(0, 28)}...</div>`).join('');
-    historyBox.querySelectorAll('.hist-item').forEach((el, idx) => {
-        el.onclick = () => useHist(hist[idx]);
-    });
+    historyBox.innerHTML = hist.map((i,idx) => `<div class="hist-item" data-idx="${idx}">${i.substring(0,28)}...</div>`).join('');
+    historyBox.querySelectorAll('.hist-item').forEach((el,idx) => { el.onclick = () => { queryInput.value = hist[idx]; sidebar.classList.remove('active'); sidebarBlur.classList.remove('active'); }; });
 }
 
-function useHist(i) {
-    queryInput.value = i;
-    sidebar.classList.remove('active');
-    sidebarBlur.classList.remove('active');
-}
-
-document.getElementById('clear-history').onclick = () => {
-    localStorage.removeItem('yz_history_v3');
-    renderHistory();
-};
-
-sendTrigger.onclick = () => {
-    const val = queryInput.value.trim();
-    if (val) { appendMessage(val, false); processSearch(val); queryInput.value = ''; }
-};
-
+document.getElementById('clear-history').onclick = () => { localStorage.removeItem('yz_history_v3'); renderHistory(); };
+sendTrigger.onclick = () => { const val = queryInput.value.trim(); if (val) { appendMessage(val, false); processSearch(val); queryInput.value = ''; } };
 queryInput.onkeypress = (e) => { if (e.key === 'Enter') sendTrigger.click(); };
 window.onload = () => { setTheme(localStorage.getItem('yz_theme_v3') || 'standard'); renderHistory(); };
-    </script>
+</script>
 </body>
 </html>
-
