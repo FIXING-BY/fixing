@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mat Games</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: #0f172a; color: #f8fafc; font-family: sans-serif; margin: 0;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    touch-action: manipulation;
+  }
+  header { text-align: center; padding: 35px 20px 10px; }
+  header h1 { font-size: 2.5rem; margin: 0; letter-spacing: 1px; }
+  header h1 span { color: #6366f1; }
+  header p { color: #94a3b8; margin-top: 6px; }
+
+  main { width: 100%; max-width: 920px; padding: 10px 20px 30px; flex: 1; }
+  .hidden { display: none !important; }
+
+  /* ---- Menü ---- */
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 20px; }
+  .game-card {
+    background: #1e293b; border-radius: 20px; padding: 28px 20px; text-align: center;
+    cursor: pointer; transition: 0.2s; border: 2px solid transparent;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  }
+  .game-card:hover { transform: translateY(-5px); border-color: #6366f1; }
+  .game-card .emoji { font-size: 3rem; }
+  .game-card h3 { margin: 10px 0 6px; font-size: 1.15rem; }
+  .game-card p { color: #94a3b8; font-size: 0.9rem; margin: 0; }
+
+  /* ---- Oyun ekranları ---- */
+  .game-screen {
+    background: #1e293b; padding: 30px; border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .back-btn { background: #334155; padding: 10px 18px; font-size: 0.9rem; }
+  .back-btn:hover { background: #475569; }
+  .game-title { margin: 0; font-size: 1.4rem; }
+
+  .container { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; align-items: flex-start; }
+  canvas { background: #0f172a; border-radius: 16px; cursor: crosshair; touch-action: none; border: 4px solid #334155; }
+  canvas.round { border-radius: 50%; }
+  .panel { width: 280px; text-align: center; display: flex; flex-direction: column; gap: 15px; }
+
+  button {
+    background: #6366f1; color: white; border: none; padding: 15px; border-radius: 10px;
+    font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem;
+  }
+  button:hover { background: #4f46e5; }
+
+  #result, .result-box { padding: 15px; background: #334155; border-radius: 10px; min-height: 50px; }
+
+  /* ---- Çarpım Yarışı ---- */
+  .question-box {
+    font-size: 2.4rem; font-weight: bold; background: #0f172a; padding: 25px;
+    border-radius: 16px; border: 4px solid #334155; text-align: center;
+  }
+  .timerbar-bg { background: #0f172a; border-radius: 10px; height: 14px; overflow: hidden; border: 2px solid #334155; }
+  .timerbar { background: #10b981; height: 100%; width: 100%; transition: width 0.1s linear; }
+  .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .choices button { background: #334155; font-size: 1.3rem; padding: 20px; }
+  .choices button:hover { background: #475569; }
+  .choices button.correct { background: #10b981 !important; }
+  .choices button.wrong { background: #ef4444 !important; }
+  .choices button:disabled { cursor: default; }
+
+  /* ---- Kesir Eşleştirme ---- */
+  .cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; max-width: 480px; }
+  .card {
+    background: #334155; border-radius: 12px; aspect-ratio: 1; display: flex;
+    align-items: center; justify-content: center; font-size: 1.1rem; font-weight: bold;
+    cursor: pointer; user-select: none; transition: 0.2s; text-align: center; padding: 5px;
+  }
+  .card.flipped { background: #6366f1; }
+  .card.matched { background: #10b981; cursor: default; }
+
+  footer { text-align: center; padding: 25px 15px; color: #64748b; font-size: 0.9rem; }
+  footer strong { color: #94a3b8; }
+
+  @media (max-width: 480px) {
+    header h1 { font-size: 2rem; }
+    .question-box { font-size: 1.8rem; padding: 18px; }
+    .panel { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mat <span>Games</span></h1>
+  <p>Matematiği oynayarak öğren! 🎮</p>
+  <div style="margin-top:15px; display:flex; gap:10px; justify-content:center; align-items:center; flex-wrap:wrap;">
+    <button id="arduinoConnectBtn" style="background:#334155; padding:10px 18px; font-size:0.85rem;">🔌 Arduino'ya Bağlan</button>
+    <span id="arduinoStatus" style="color:#94a3b8; font-size:0.85rem;">Arduino bağlı değil</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= MENÜ ================= -->
+  <section id="menu" class="menu-grid">
+    <div class="game-card" data-game="angle">
+      <div class="emoji">🎯</div>
+      <h3>Açı Tahmin Oyunu</h3>
+      <p>Çemberi çevir hedef açıyı yakala!</p>
+    </div>
+    <div class="game-card" data-game="multiply">
+      <div class="emoji">⚡</div>
+      <h3>Çarpım Tablosu Yarışı</h3>
+      <p>Süre bitmeden doğru cevabı bul!</p>
+    </div>
+    <div class="game-card" data-game="numberline">
+      <div class="emoji">🔢</div>
+      <h3>Sayı Doğrusu Avcısı</h3>
+      <p>Sayının yerini doğrusta bul!</p>
+    </div>
+    <div class="game-card" data-game="fractions">
+      <div class="emoji">🍕</div>
+      <h3>Kesir Eşleştirme</h3>
+      <p>Eşit kesirleri eşleştir kartları aç!</p>
+    </div>
+    <div class="game-card" data-game="circle">
+      <div class="emoji">⭕</div>
+      <h3>Daire Çizme</h3>
+      <p>Ne kadar düzgün bir daire çizebilirsin!</p>
+    </div>
+    <div class="game-card" data-game="guess">
+      <div class="emoji">🎲</div>
+      <h3>Sayı Tahmin</h3>
+      <p>1 ile 100 arasındaki sayıyı bul!</p>
+    </div>
+  </section>
+
+  <!-- ================= OYUN 1: AÇI TAHMİN ================= -->
+  <section id="game-angle" class="game-screen hidden">
+    <div class="top-row">
+      <button class="back-btn" onclick="showMenu()">← Menü</button>
+      <h2 class="game-title">🎯 Açı Tahmin Oyunu</h2>
+      <span></span>
+    </div>
+    <div class="container">
+      <canvas id="circleCanvas" class="round" width="320" height="320"></canvas>
+      <div class="panel">
+        <h2>Hedef: <span id="targetDisplay" style="color:#10b981;">?</span>°</h2>
+        <div id="result">Başlamak için çemberi kullan</div>
+        <button id="angleActionBtn">Tahmini Onayla</button>
+        <p id="angleRoundInfo">Tur: 1 / 10</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OYUN 2: ÇARPIM TABLOSU YARIŞI ================= -->
+  <section id="game-multiply" class="game-screen hidden">
+    <div class="top-row">
+      <button class="back-btn" onclick="showMenu()">← Menü</button>
+      <h2 class="game-title">⚡ Çarpım Tablosu Yarışı</h2>
+      <span></span>
+    </div>
+    <div class="container">
+      <div class="panel" style="width:100%; max-width:420px;">
+        <div class="timerbar-bg"><div id="mulTimer" class="timerbar"></div></div>
+        <div class="question-box" id="mulQuestion">? x ? = ?</div>
+        <div class="choices" id="mulChoices"></div>
+        <div class="result-box" id="mulResult">Hazır mısın? Süre başlayınca yarış başlar!</div>
+        <p id="mulRoundInfo">Tur: 1 / 10 &nbsp;|&nbsp; Skor: 0</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OYUN 3: SAYI DOĞRUSU AVCISI ================= -->
+  <section id="game-numberline" class="game-screen hidden">
+    <div class="top-row">
+      <button class="back-btn" onclick="showMenu()">← Menü</button>
+      <h2 class="game-title">🔢 Sayı Doğrusu Avcısı</h2>
+      <span></span>
+    </div>
+    <div class="container">
+      <canvas id="lineCanvas" width="560" height="160"></canvas>
+      <div class="panel">
+        <h2>Bul: <span id="nlTargetDisplay" style="color:#10b981;">?</span></h2>
+        <div id="nlResult" class="result-box">Sayı doğrusunun üzerine tıkla sonra onayla!</div>
+        <button id="nlActionBtn">Tahmini Onayla</button>
+        <p id="nlRoundInfo">Tur: 1 / 10</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OYUN 4: KESİR EŞLEŞTİRME ================= -->
+  <section id="game-fractions" class="game-screen hidden">
+    <div class="top-row">
+      <button class="back-btn" onclick="showMenu()">← Menü</button>
+      <h2 class="game-title">🍕 Kesir Eşleştirme</h2>
+      <span></span>
+    </div>
+    <div class="container">
+      <div class="cards-grid" id="cardsGrid"></div>
+      <div class="panel">
+        <div id="fracResult" class="result-box">Eşit iki kartı bulup eşleştir!</div>
+        <p id="fracInfo">Hamle: 0 &nbsp;|&nbsp; Eşleşme: 0 / 6</p>
+        <button id="fracRestartBtn">Yeniden Başlat</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OYUN 5: DAİRE ÇİZME ================= -->
+  <section id="game-circle" class="game-screen hidden">
+    <div class="top-row">
+      <button class="back-btn" onclick="showMenu()">← Menü</button>
+      <h2 class="game-title">⭕ Daire Çizme</h2>
+      <span></span>
+    </div>
+    <div class="container">
+      <canvas id="circleDrawCanvas" width="320" height="320"></canvas>
+      <div class="panel">
+        <div id="circleResult" class="result-box">Mouse ile basılı tutup bir daire çiz!</div>
+        <button id="circleRestartBtn">Yeniden Başlat</button>
+        <p id="circleRoundInfo">Tur: 1 / 5</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= OYUN 6: SAYI TAHMİN ================= -->
+  <section id="game-guess" class="game-screen hidden">
+    <div class="top-row">
+      <button class="back-btn" onclick="showMenu()">← Menü</button>
+      <h2 class="game-title">🎲 Sayı Tahmin</h2>
+      <span></span>
+    </div>
+    <div class="container">
+      <div class="panel" style="width:100%; max-width:380px;">
+        <h2>1 ile 100 arasında bir sayı tuttum</h2>
+        <input type="number" id="guessInput" min="1" max="100" placeholder="Tahminini yaz" style="padding:15px; border-radius:10px; border:2px solid #334155; background:#0f172a; color:#f8fafc; font-size:1.2rem; text-align:center;">
+        <button id="guessActionBtn">Tahmin Et</button>
+        <div id="guessResult" class="result-box">Bir sayı düşündüm hadi bul!</div>
+        <p id="guessInfo">Deneme: 0</p>
+        <button id="guessRestartBtn">Yeniden Başlat</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Bu site <strong>by Hasan eymen kartal</strong> tarafından hazırlandı 💜</footer>
+
+<script>
+/* =========================================================
+   ARDUINO BAĞLANTISI (Web Serial API)
+   C = doğru cevap   W = yanlış cevap
+   Arduino tarafında 9600 baud kullanılıyor
+========================================================= */
+let arduinoPort = null;
+let arduinoWriter = null;
+
+async function connectArduino() {
+  if (!("serial" in navigator)) {
+    document.getElementById("arduinoStatus").textContent = "Tarayıcı desteklemiyor (Chrome kullan)";
+    return;
+  }
+  try {
+    arduinoPort = await navigator.serial.requestPort();
+    await arduinoPort.open({ baudRate: 9600 });
+    const encoder = new TextEncoderStream();
+    encoder.readable.pipeTo(arduinoPort.writable);
+    arduinoWriter = encoder.writable.getWriter();
+    document.getElementById("arduinoStatus").textContent = "Arduino bağlandı ✅";
+  } catch (err) {
+    console.error(err);
+    document.getElementById("arduinoStatus").textContent = "Bağlantı başarısız ❌";
+  }
+}
+
+async function sendToArduino(cmd) {
+  if (!arduinoWriter) return;
+  try {
+    await arduinoWriter.write(cmd);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+document.getElementById("arduinoConnectBtn").addEventListener("click", connectArduino);
+
+/* =========================================================
+   GENEL MENÜ YÖNETİMİ
+========================================================= */
+const menu = document.getElementById("menu");
+const screens = {
+  angle: document.getElementById("game-angle"),
+  multiply: document.getElementById("game-multiply"),
+  numberline: document.getElementById("game-numberline"),
+  fractions: document.getElementById("game-fractions"),
+  circle: document.getElementById("game-circle"),
+  guess: document.getElementById("game-guess"),
+};
+
+function showMenu() {
+  menu.classList.remove("hidden");
+  Object.values(screens).forEach(s => s.classList.add("hidden"));
+}
+
+function startGame(name) {
+  menu.classList.add("hidden");
+  Object.values(screens).forEach(s => s.classList.add("hidden"));
+  screens[name].classList.remove("hidden");
+  if (name === "angle") initAngleGame();
+  if (name === "multiply") initMultiplyGame();
+  if (name === "numberline") initNumberLineGame();
+  if (name === "fractions") initFractionsGame();
+  if (name === "circle") initCircleGame();
+  if (name === "guess") initGuessGame();
+}
+
+document.querySelectorAll(".game-card").forEach(card => {
+  card.addEventListener("click", () => startGame(card.dataset.game));
+});
+
+/* =========================================================
+   OYUN 1: AÇI TAHMİN OYUNU
+========================================================= */
+const angleCanvas = document.getElementById("circleCanvas");
+const actx = angleCanvas.getContext("2d");
+const aCenterX = 160, aCenterY = 160, aRadius = 130;
+
+let angleTarget = 0, angleDisplay = 0, angleMouse = 0;
+let angleRound = 1;
+let angleRunning = false;
+
+function getAngle(x, y) {
+  let angle = Math.atan2(y - aCenterY, x - aCenterX) * (180 / Math.PI);
+  return (angle < 0 ? angle + 360 : angle);
+}
+function angleHandleInput(e) {
+  const rect = angleCanvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  angleMouse = getAngle(clientX - rect.left, clientY - rect.top);
+}
+angleCanvas.addEventListener("mousemove", angleHandleInput);
+angleCanvas.addEventListener("touchmove", (e) => { angleHandleInput(e); e.preventDefault(); }, {passive: false});
+
+function angleDraw() {
+  if (!angleRunning) return;
+  actx.clearRect(0, 0, 320, 320);
+
+  let diff = (angleMouse - angleDisplay + 540) % 360 - 180;
+  angleDisplay = (angleDisplay + diff * 0.15 + 360) % 360;
+
+  actx.beginPath();
+  actx.strokeStyle = "#10b981"; actx.lineWidth = 5;
+  actx.moveTo(aCenterX, aCenterY);
+  actx.lineTo(aCenterX + aRadius, aCenterY);
+  actx.stroke();
+
+  const rad = angleDisplay * Math.PI / 180;
+  actx.beginPath();
+  actx.strokeStyle = "#6366f1"; actx.lineWidth = 8; actx.lineCap = "round";
+  actx.moveTo(aCenterX, aCenterY);
+  actx.lineTo(aCenterX + aRadius * Math.cos(rad), aCenterY + aRadius * Math.sin(rad));
+  actx.stroke();
+
+  requestAnimationFrame(angleDraw);
+}
+
+document.getElementById("angleActionBtn").addEventListener("click", () => {
+  const diff = Math.round(Math.min(Math.abs(angleDisplay - angleTarget), 360 - Math.abs(angleDisplay - angleTarget)));
+  document.getElementById("result").innerHTML = `Tahminin: ${Math.round(angleDisplay)}°<br>Fark: <strong>${diff}°</strong>`;
+  sendToArduino(diff <= 15 ? "C" : "W");
+
+  if (angleRound < 10) {
+    angleRound++;
+    angleTarget = Math.floor(Math.random() * 360);
+    document.getElementById("targetDisplay").textContent = angleTarget;
+    document.getElementById("angleRoundInfo").textContent = `Tur: ${angleRound} / 10`;
+  } else {
+    document.getElementById("result").innerHTML = "Oyun Bitti! 🎉";
+  }
+});
+
+function initAngleGame() {
+  angleRound = 1; angleDisplay = 0; angleMouse = 0;
+  angleTarget = Math.floor(Math.random() * 360);
+  document.getElementById("targetDisplay").textContent = angleTarget;
+  document.getElementById("angleRoundInfo").textContent = "Tur: 1 / 10";
+  document.getElementById("result").innerHTML = "Başlamak için çemberi kullan";
+  if (!angleRunning) { angleRunning = true; angleDraw(); }
+}
+
+/* =========================================================
+   OYUN 2: ÇARPIM TABLOSU YARIŞI
+========================================================= */
+const mulQuestionEl = document.getElementById("mulQuestion");
+const mulChoicesEl = document.getElementById("mulChoices");
+const mulResultEl = document.getElementById("mulResult");
+const mulRoundInfoEl = document.getElementById("mulRoundInfo");
+const mulTimerEl = document.getElementById("mulTimer");
+
+let mulRound = 1, mulScore = 0, mulCorrectAnswer = 0;
+let mulTimeLeft = 0, mulTimerId = null;
+const MUL_TIME = 6000; // ms
+
+function mulNewQuestion() {
+  clearInterval(mulTimerId);
+  const a = Math.floor(Math.random() * 11) + 2; // 2-12
+  const b = Math.floor(Math.random() * 11) + 2;
+  mulCorrectAnswer = a * b;
+  mulQuestionEl.textContent = `${a} x ${b} = ?`;
+
+  const choices = new Set([mulCorrectAnswer]);
+  while (choices.size < 4) {
+    const offset = Math.floor(Math.random() * 10) - 5;
+    const fake = mulCorrectAnswer + offset;
+    if (fake > 0 && fake !== mulCorrectAnswer) choices.add(fake);
+  }
+  const arr = Array.from(choices);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+
+  mulChoicesEl.innerHTML = "";
+  arr.forEach(num => {
+    const btn = document.createElement("button");
+    btn.textContent = num;
+    btn.addEventListener("click", () => mulCheckAnswer(btn, num));
+    mulChoicesEl.appendChild(btn);
+  });
+
+  mulRoundInfoEl.textContent = `Tur: ${mulRound} / 10 | Skor: ${mulScore}`;
+  mulResultEl.textContent = "Doğru cevabı seç!";
+
+  mulTimeLeft = MUL_TIME;
+  mulTimerEl.style.width = "100%";
+  mulTimerId = setInterval(() => {
+    mulTimeLeft -= 100;
+    mulTimerEl.style.width = Math.max(0, (mulTimeLeft / MUL_TIME) * 100) + "%";
+    if (mulTimeLeft <= 0) {
+      clearInterval(mulTimerId);
+      mulCheckAnswer(null, null); // süre bitti, yanlış say
+    }
+  }, 100);
+}
+
+function mulCheckAnswer(btn, num) {
+  clearInterval(mulTimerId);
+  Array.from(mulChoicesEl.children).forEach(b => b.disabled = true);
+
+  if (num === mulCorrectAnswer) {
+    if (btn) btn.classList.add("correct");
+    mulScore++;
+    mulResultEl.textContent = "Doğru cevap! 🎉";
+    sendToArduino("C");
+  } else {
+    if (btn) btn.classList.add("wrong");
+    Array.from(mulChoicesEl.children).forEach(b => {
+      if (parseInt(b.textContent) === mulCorrectAnswer) b.classList.add("correct");
+    });
+    mulResultEl.textContent = num === null ? "Süre bitti! ⏰" : "Yanlış cevap 😕";
+    sendToArduino("W");
+  }
+
+  setTimeout(() => {
+    if (mulRound < 10) {
+      mulRound++;
+      mulNewQuestion();
+    } else {
+      mulQuestionEl.textContent = "Oyun Bitti!";
+      mulChoicesEl.innerHTML = "";
+      mulTimerEl.style.width = "0%";
+      mulResultEl.innerHTML = `Skorun: <strong>${mulScore} / 10</strong> 🎉`;
+      mulRoundInfoEl.textContent = `Tur: 10 / 10 | Skor: ${mulScore}`;
+    }
+  }, 1200);
+}
+
+function initMultiplyGame() {
+  mulRound = 1; mulScore = 0;
+  mulNewQuestion();
+}
+
+/* =========================================================
+   OYUN 3: SAYI DOĞRUSU AVCISI
+========================================================= */
+const lineCanvas = document.getElementById("lineCanvas");
+const lctx = lineCanvas.getContext("2d");
+const NL_MIN = -10, NL_MAX = 10;
+const NL_MARGIN = 35, NL_Y = 80, NL_WIDTH = 560;
+
+let nlTarget = 0, nlRound = 1, nlGuessX = null;
+
+function nlValueToX(v) {
+  return NL_MARGIN + (v - NL_MIN) / (NL_MAX - NL_MIN) * (NL_WIDTH - 2 * NL_MARGIN);
+}
+function nlXToValue(x) {
+  return NL_MIN + (x - NL_MARGIN) / (NL_WIDTH - 2 * NL_MARGIN) * (NL_MAX - NL_MIN);
+}
+
+function nlDraw() {
+  lctx.clearRect(0, 0, NL_WIDTH, 160);
+
+  // Ana çizgi
+  lctx.beginPath();
+  lctx.strokeStyle = "#334155"; lctx.lineWidth = 4;
+  lctx.moveTo(NL_MARGIN, NL_Y);
+  lctx.lineTo(NL_WIDTH - NL_MARGIN, NL_Y);
+  lctx.stroke();
+
+  // İşaretler ve etiketler
+  lctx.fillStyle = "#94a3b8";
+  lctx.font = "13px sans-serif";
+  lctx.textAlign = "center";
+  for (let v = NL_MIN; v <= NL_MAX; v++) {
+    const x = nlValueToX(v);
+    const tickH = (v % 5 === 0) ? 12 : 6;
+    lctx.beginPath();
+    lctx.strokeStyle = (v % 5 === 0) ? "#10b981" : "#475569";
+    lctx.lineWidth = (v % 5 === 0) ? 3 : 2;
+    lctx.moveTo(x, NL_Y - tickH);
+    lctx.lineTo(x, NL_Y + tickH);
+    lctx.stroke();
+    if (v % 5 === 0) lctx.fillText(v, x, NL_Y + 28);
+  }
+
+  // Kullanıcının işareti
+  if (nlGuessX !== null) {
+    lctx.beginPath();
+    lctx.fillStyle = "#6366f1";
+    lctx.moveTo(nlGuessX, NL_Y - 20);
+    lctx.lineTo(nlGuessX - 9, NL_Y - 38);
+    lctx.lineTo(nlGuessX + 9, NL_Y - 38);
+    lctx.closePath();
+    lctx.fill();
+  }
+}
+
+function nlHandleClick(e) {
+  const rect = lineCanvas.getBoundingClientRect();
+  const clientX = e.touches ? e.changedTouches[0].clientX : e.clientX;
+  const scaleX = NL_WIDTH / rect.width;
+  let x = (clientX - rect.left) * scaleX;
+  x = Math.max(NL_MARGIN, Math.min(NL_WIDTH - NL_MARGIN, x));
+  nlGuessX = x;
+  nlDraw();
+}
+lineCanvas.addEventListener("click", nlHandleClick);
+lineCanvas.addEventListener("touchend", (e) => { nlHandleClick(e); e.preventDefault(); }, {passive: false});
+
+document.getElementById("nlActionBtn").addEventListener("click", () => {
+  if (nlGuessX === null) {
+    document.getElementById("nlResult").textContent = "Önce sayı doğrusuna tıkla!";
+    return;
+  }
+  const guessValue = nlXToValue(nlGuessX);
+  const diff = Math.round(Math.abs(guessValue - nlTarget) * 10) / 10;
+  document.getElementById("nlResult").innerHTML =
+    `Tahminin: ${guessValue.toFixed(1)}<br>Fark: <strong>${diff}</strong> birim`;
+  sendToArduino(diff <= 1 ? "C" : "W");
+
+  if (nlRound < 10) {
+    nlRound++;
+    nlTarget = Math.floor(Math.random() * (NL_MAX - NL_MIN + 1)) + NL_MIN;
+    document.getElementById("nlTargetDisplay").textContent = nlTarget;
+    document.getElementById("nlRoundInfo").textContent = `Tur: ${nlRound} / 10`;
+    nlGuessX = null;
+    nlDraw();
+  } else {
+    document.getElementById("nlResult").innerHTML += "<br><strong>Oyun Bitti! 🎉</strong>";
+  }
+});
+
+function initNumberLineGame() {
+  nlRound = 1; nlGuessX = null;
+  nlTarget = Math.floor(Math.random() * (NL_MAX - NL_MIN + 1)) + NL_MIN;
+  document.getElementById("nlTargetDisplay").textContent = nlTarget;
+  document.getElementById("nlRoundInfo").textContent = "Tur: 1 / 10";
+  document.getElementById("nlResult").textContent = "Sayı doğrusunun üzerine tıkla sonra onayla!";
+  nlDraw();
+}
+
+/* =========================================================
+   OYUN 4: KESİR EŞLEŞTİRME
+========================================================= */
+const cardsGrid = document.getElementById("cardsGrid");
+const fracResultEl = document.getElementById("fracResult");
+const fracInfoEl = document.getElementById("fracInfo");
+
+const FRACTION_PAIRS = [
+  ["1/2", "%50"],
+  ["1/4", "%25"],
+  ["3/4", "%75"],
+  ["1/5", "0,2"],
+  ["2/5", "0,4"],
+  ["1/10", "0,1"],
+];
+
+let fracFlipped = [];
+let fracMatched = 0;
+let fracMoves = 0;
+let fracLocked = false;
+
+function initFractionsGame() {
+  fracFlipped = [];
+  fracMatched = 0;
+  fracMoves = 0;
+  fracLocked = false;
+  fracResultEl.textContent = "Eşit iki kartı bulup eşleştir!";
+  fracInfoEl.textContent = "Hamle: 0 | Eşleşme: 0 / 6";
+
+  let cards = [];
+  FRACTION_PAIRS.forEach((pair, idx) => {
+    cards.push({ text: pair[0], pairId: idx });
+    cards.push({ text: pair[1], pairId: idx });
+  });
+  // Karıştır
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+
+  cardsGrid.innerHTML = "";
+  cards.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.dataset.pairId = c.pairId;
+    div.dataset.text = c.text;
+    div.textContent = "❓";
+    div.addEventListener("click", () => fracFlipCard(div));
+    cardsGrid.appendChild(div);
+  });
+}
+
+function fracFlipCard(card) {
+  if (fracLocked) return;
+  if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+
+  card.classList.add("flipped");
+  card.textContent = card.dataset.text;
+  fracFlipped.push(card);
+
+  if (fracFlipped.length === 2) {
+    fracLocked = true;
+    fracMoves++;
+    const [c1, c2] = fracFlipped;
+    if (c1.dataset.pairId === c2.dataset.pairId) {
+      c1.classList.add("matched");
+      c2.classList.add("matched");
+      fracMatched++;
+      fracResultEl.textContent = "Eşleştin! Harikasın 🎉";
+      sendToArduino("C");
+      fracFlipped = [];
+      fracLocked = false;
+      fracInfoEl.textContent = `Hamle: ${fracMoves} | Eşleşme: ${fracMatched} / 6`;
+      if (fracMatched === 6) {
+        fracResultEl.innerHTML = `Tebrikler hepsini buldun! 🏆<br>Toplam hamle: <strong>${fracMoves}</strong>`;
+      }
+    } else {
+      fracResultEl.textContent = "Olmadı tekrar dene!";
+      sendToArduino("W");
+      setTimeout(() => {
+        c1.classList.remove("flipped"); c1.textContent = "❓";
+        c2.classList.remove("flipped"); c2.textContent = "❓";
+        fracFlipped = [];
+        fracLocked = false;
+        fracInfoEl.textContent = `Hamle: ${fracMoves} | Eşleşme: ${fracMatched} / 6`;
+      }, 800);
+    }
+  }
+}
+
+document.getElementById("fracRestartBtn").addEventListener("click", initFractionsGame);
+
+/* =========================================================
+   OYUN 5: DAİRE ÇİZME
+========================================================= */
+const circleDrawCanvas = document.getElementById("circleDrawCanvas");
+const cdctx = circleDrawCanvas.getContext("2d");
+
+let cdPoints = [];
+let cdDrawing = false;
+let cdRound = 1;
+let cdTotalScore = 0;
+const CD_MAX_ROUND = 5;
+
+function cdGetPos(e) {
+  const rect = circleDrawCanvas.getBoundingClientRect();
+  const t = e.touches ? (e.touches[0] || e.changedTouches[0]) : e;
+  const scaleX = circleDrawCanvas.width / rect.width;
+  const scaleY = circleDrawCanvas.height / rect.height;
+  return { x: (t.clientX - rect.left) * scaleX, y: (t.clientY - rect.top) * scaleY };
+}
+
+function cdStart(e) {
+  cdDrawing = true;
+  cdPoints = [];
+  cdctx.clearRect(0, 0, 320, 320);
+  cdPoints.push(cdGetPos(e));
+  e.preventDefault();
+}
+
+function cdMove(e) {
+  if (!cdDrawing) return;
+  const p = cdGetPos(e);
+  const prev = cdPoints[cdPoints.length - 1];
+  cdctx.beginPath();
+  cdctx.strokeStyle = "#6366f1";
+  cdctx.lineWidth = 5;
+  cdctx.lineCap = "round";
+  cdctx.moveTo(prev.x, prev.y);
+  cdctx.lineTo(p.x, p.y);
+  cdctx.stroke();
+  cdPoints.push(p);
+  e.preventDefault();
+}
+
+function cdEnd(e) {
+  if (!cdDrawing) return;
+  cdDrawing = false;
+  cdFinishDrawing();
+  e.preventDefault();
+}
+
+circleDrawCanvas.addEventListener("mousedown", cdStart);
+circleDrawCanvas.addEventListener("mousemove", cdMove);
+circleDrawCanvas.addEventListener("mouseup", cdEnd);
+circleDrawCanvas.addEventListener("touchstart", cdStart, {passive: false});
+circleDrawCanvas.addEventListener("touchmove", cdMove, {passive: false});
+circleDrawCanvas.addEventListener("touchend", cdEnd, {passive: false});
+
+function cdFinishDrawing() {
+  const resultEl = document.getElementById("circleResult");
+
+  if (cdPoints.length < 10) {
+    resultEl.textContent = "Daha uzun bir çizgiyle dene!";
+    return;
+  }
+
+  let cx = 0, cy = 0;
+  cdPoints.forEach(p => { cx += p.x; cy += p.y; });
+  cx /= cdPoints.length; cy /= cdPoints.length;
+
+  const radii = cdPoints.map(p => Math.hypot(p.x - cx, p.y - cy));
+  const avgR = radii.reduce((a, b) => a + b, 0) / radii.length;
+
+  if (avgR < 15) {
+    resultEl.textContent = "Çok küçük çizdin daha büyük bir daire dene!";
+    return;
+  }
+
+  const variance = radii.reduce((a, r) => a + (r - avgR) * (r - avgR), 0) / radii.length;
+  const stdDev = Math.sqrt(variance);
+  const relDev = stdDev / avgR;
+  const score = Math.max(0, Math.min(100, Math.round(100 - relDev * 200)));
+
+  cdctx.beginPath();
+  cdctx.setLineDash([6, 6]);
+  cdctx.strokeStyle = "#10b981";
+  cdctx.lineWidth = 2;
+  cdctx.arc(cx, cy, avgR, 0, Math.PI * 2);
+  cdctx.stroke();
+  cdctx.setLineDash([]);
+
+  let mesaj;
+  if (score >= 90) mesaj = "Pergel gibisin! 🏆";
+  else if (score >= 70) mesaj = "Çok iyi bir daire! 👍";
+  else if (score >= 50) mesaj = "Fena değil biraz daha pratik!";
+  else mesaj = "Daha yuvarlak çizmeyi dene!";
+
+  resultEl.innerHTML = `Doğruluk: <strong>%${score}</strong><br>${mesaj}`;
+  sendToArduino(score >= 70 ? "C" : "W");
+
+  cdTotalScore += score;
+
+  if (cdRound < CD_MAX_ROUND) {
+    cdRound++;
+    document.getElementById("circleRoundInfo").textContent = `Tur: ${cdRound} / ${CD_MAX_ROUND}`;
+  } else {
+    const avgScore = Math.round(cdTotalScore / CD_MAX_ROUND);
+    resultEl.innerHTML += `<br><strong>Oyun Bitti! Ortalama doğruluk: %${avgScore}</strong>`;
+  }
+}
+
+function initCircleGame() {
+  cdRound = 1; cdTotalScore = 0; cdPoints = []; cdDrawing = false;
+  cdctx.clearRect(0, 0, 320, 320);
+  document.getElementById("circleResult").textContent = "Mouse ile basılı tutup bir daire çiz!";
+  document.getElementById("circleRoundInfo").textContent = `Tur: 1 / ${CD_MAX_ROUND}`;
+}
+
+document.getElementById("circleRestartBtn").addEventListener("click", initCircleGame);
+
+/* =========================================================
+   OYUN 6: SAYI TAHMİN
+========================================================= */
+let guessTarget = 0;
+let guessAttempts = 0;
+
+function initGuessGame() {
+  guessTarget = Math.floor(Math.random() * 100) + 1;
+  guessAttempts = 0;
+  const input = document.getElementById("guessInput");
+  input.value = "";
+  input.disabled = false;
+  document.getElementById("guessActionBtn").disabled = false;
+  document.getElementById("guessResult").textContent = "Bir sayı düşündüm hadi bul!";
+  document.getElementById("guessInfo").textContent = "Deneme: 0";
+}
+
+function guessCheck() {
+  const input = document.getElementById("guessInput");
+  const val = parseInt(input.value);
+  const resultEl = document.getElementById("guessResult");
+
+  if (isNaN(val) || val < 1 || val > 100) {
+    resultEl.textContent = "1 ile 100 arasında bir sayı yaz!";
+    return;
+  }
+
+  guessAttempts++;
+  document.getElementById("guessInfo").textContent = `Deneme: ${guessAttempts}`;
+
+  if (val === guessTarget) {
+    resultEl.innerHTML = `🎉 Doğru bildin! Sayı <strong>${guessTarget}</strong>'di<br>Toplam deneme: <strong>${guessAttempts}</strong>`;
+    sendToArduino("C");
+    input.disabled = true;
+    document.getElementById("guessActionBtn").disabled = true;
+  } else if (val < guessTarget) {
+    resultEl.textContent = "🔼 Çık! Daha büyük bir sayı dene";
+    sendToArduino("W");
+  } else {
+    resultEl.textContent = "🔽 İn! Daha küçük bir sayı dene";
+    sendToArduino("W");
+  }
+
+  input.value = "";
+  input.focus();
+}
+
+document.getElementById("guessActionBtn").addEventListener("click", guessCheck);
+document.getElementById("guessInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") guessCheck();
+});
+document.getElementById("guessRestartBtn").addEventListener("click", initGuessGame);
+
+</script>
+</body>
+</html>
