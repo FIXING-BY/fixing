@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qono AI | Fixing by Qono Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700;900&display=swap');
+        
+        body {
+            background: #000;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 3000px; /* Daha derin 3D hissi için perspective artırıldı */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #particles { position: fixed; inset: 0; z-index: -2; }
+        
+        #cursor-glow {
+            position: fixed;
+            width: 700px; /* Daha geniş parlama */
+            height: 700px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            transform: translate(-50%, -50%);
+        }
+
+        .card-wrapper {
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+            /* "AZICIK DAHA UZAKTAN" GÖRÜNÜM: Tüm kartı küçültüyoruz */
+            transform: scale(0.8) translateZ(-100px); 
+        }
+        .card-wrapper.active {
+             /* Giriş animasyonu bittiğinde scale(0.8) kalacak */
+             transform: scale(0.8) translateZ(0);
+        }
+
+        .glass-card {
+            background: rgba(4, 4, 12, 0.88);
+            backdrop-filter: blur(80px); /* Daha yoğun bulanıklık */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 90px;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 180px rgba(0,0,0,1); /* Daha belirgin gölge */
+            position: relative;
+        }
+
+        /* "Holografik" Kenar Akışı */
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, transparent, rgba(99,102,241,0.6), transparent, rgba(217,70,239,0.6), transparent);
+            background-size: 300% 300%;
+            border-radius: 92px;
+            z-index: -1;
+            animation: border-hologram 4s linear infinite;
+        }
+
+        @keyframes border-hologram {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 300% 300%; }
+        }
+
+        /* BAYA BAYA BÜYÜK LOGO VE ANIMASYONU */
+        .logo-giant {
+            filter: drop-shadow(0 0 50px rgba(255,255,255,0.25));
+            animation: logo-super-float 8s ease-in-out infinite;
+            transform: translateZ(200px); /* Logo kartın çok önünde duruyor */
+        }
+        @keyframes logo-super-float {
+            0%, 100% { transform: translateZ(200px) translateY(0) scale(1) rotate(0deg); }
+            50% { transform: translateZ(280px) translateY(-30px) scale(1.08) rotate(1deg); }
+        }
+
+        .cyber-btn {
+            background: #fff;
+            color: #000;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            border-radius: 40px; /* Daha kavisli buton */
+        }
+
+        .cyber-btn:hover {
+            box-shadow: 0 0 80px rgba(99,102,241,0.7);
+            transform: translateZ(120px) scale(1.12);
+            background: #6366f1;
+            color: white;
+        }
+
+        /* Sayfa Giriş Reveal */
+        .reveal { opacity: 0; transform: scale(0.6) rotateX(20deg); transition: 2.5s cubic-bezier(0.2, 1, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: scale(0.8) rotateX(0deg); } /* Scale(0.8) korundu */
+
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+    <div id="cursor-glow"></div>
+
+    <div class="card-wrapper reveal" id="mainCard">
+        <div class="glass-card p-16 md:p-32 relative max-w-7xl text-center">
+            
+            <div class="logo-giant mb-20 flex justify-center">
+                <svg width="400" height="400" viewBox="0 0 1920 3400" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="white" d="M1338.1 1609.03C1338.55 1609.27 1339.03 1609.4 1339.46 1609.74C1344.44 1613.67 1346.78 1642.23 1348.03 1651.4C1352.04 1680.89 1351.96 1710.54 1349.51 1740.4C1339.76 1859 1285.92 1941.29 1228.79 1993.72C1221.26 2000.63 1181.96 2028.54 1179.85 2034.69C1181.89 2042.55 1229.77 2090.14 1237.55 2098.26L1323.39 2189.33C1330.14 2196.5 1351.64 2217 1355.92 2225.14C1351.52 2228.01 1302.54 2227.37 1293.11 2227.04C1270.48 2221.99 1229.12 2234.73 1208.33 2225.22C1190.35 2216.99 1142.6 2150.5 1123.07 2135.81C1109.83 2125.85 1084.13 2085.99 1071.31 2083.01C1055.87 2079.42 1029.21 2094.25 1012.3 2092.63C999.12 2093.2 981.278 2094.58 967.714 2095.13C881.362 2099.16 795.49 2071.16 715.612 2012.93C723.588 2005.15 743.093 1993.43 752.742 1987.36C771.423 1975.61 791.56 1961.45 810.334 1950.89C818.715 1953.44 829.68 1960.39 838.065 1964.89C959.676 2030.09 1236.87 1997.57 1228.19 1680.64C1241.96 1668.13 1269.97 1652.34 1285.79 1641.36C1296.04 1634.25 1328.55 1612.4 1338.1 1609.03Z"/>
+                    <path fill="white" d="M940.018 1314.02C1023.98 1310.54 1109.54 1328.71 1188.16 1382.32C1207.36 1395.41 1233.47 1415.61 1249.98 1436.71C1231.37 1449.63 1211.84 1461.85 1193.05 1473.96C1182.17 1480.97 1167.29 1491.3 1156.32 1496.19C1144.81 1487.7 1133.9 1476.65 1121.91 1467.93C1083.4 1440.54 1042.61 1424.53 1001.16 1420.56C912.029 1411.28 805.837 1428.72 736.22 1538.38C702.749 1602.37 688.47 1650.72 695.571 1743.38C696.787 1759.25 702.698 1776.92 701.331 1790.1C696.796 1800.02 618.066 1846.35 604.672 1854.24C588.012 1864.06 571.838 1741.29 571.441 1718.94C567.174 1478.36 725.61 1369.27 836.24 1332.72C871.776 1320.98 904.932 1317.2 940.018 1314.02Z"/>
+                </svg>
+            </div>
+
+            <h1 class="text-8xl md:text-[140px] font-black mb-6 tracking-tighter leading-none" style="transform: translateZ(90px)">
+                QONO <span class="text-indigo-500 italic">AI</span>
+            </h1>
+
+            <p class="text-gray-400 text-3xl font-light mb-16 tracking-wide" style="transform: translateZ(70px)">
+                Lansman Sürümü • Altyapı: <span class="text-white font-bold">Fixing by Qono</span>
+            </p>
+
+            <div class="mb-32" style="transform: translateZ(140px)">
+                <a href="https://drive.google.com/uc?export=download&id=1Ujsj03KK_A4cjpYrP1w--lxrTqFYTkk2" 
+                   class="cyber-btn group px-24 py-9 rounded-[40px] font-black text-4xl inline-flex items-center gap-7">
+                    <i data-lucide="download-cloud"></i>
+                    INSTALL QONO 0.0.0
+                </a>
+            </div>
+
+            <div class="grid grid-cols-3 gap-12 max-w-5xl mx-auto" style="transform: translateZ(80px)">
+                <div class="group">
+                    <i data-lucide="sparkles" class="w-14 h-14 text-indigo-400 mx-auto mb-5 transition-transform group-hover:scale-150 group-hover:rotate-12"></i>
+                    <p class="text-sm tracking-[6px] text-gray-500 uppercase font-bold">Qono AI</p>
+                </div>
+                <div class="group">
+                    <i data-lucide="command" class="w-14 h-14 text-fuchsia-500 mx-auto mb-5 animate-pulse"></i>
+                    <p class="text-sm tracking-[6px] text-gray-500 uppercase font-bold">Qono Core</p>
+                </div>
+                <div class="group">
+                    <i data-lucide="zap" class="w-14 h-14 text-cyan-400 mx-auto mb-5 group-hover:animate-ping"></i>
+                    <p class="text-sm tracking-[6px] text-gray-500 uppercase font-bold">Fixing Tech</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        setTimeout(() => document.getElementById('mainCard').classList.add('active'), 200);
+
+        // Arka Plan Partikülleri (Daha fazla partikül)
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 100; i++) {
+            const dot = document.createElement('div');
+            dot.style.position = 'absolute';
+            dot.style.width = Math.random() * 4 + 'px';
+            dot.style.height = dot.style.width;
+            dot.style.background = 'rgba(99, 102, 241, 0.25)';
+            dot.style.borderRadius = '50%';
+            dot.style.top = Math.random() * 100 + '%';
+            dot.style.left = Math.random() * 100 + '%';
+            dot.style.animation = `float ${Math.random() * 12 + 10}s infinite linear`;
+            container.appendChild(dot);
+        }
+
+        // Mouse Takibi ve Gelişmiş 3D Tilt
+        const wrapper = document.querySelector('.card-wrapper');
+        const glow = document.getElementById('cursor-glow');
+
+        document.addEventListener('mousemove', (e) => {
+            glow.style.left = e.clientX + 'px';
+            glow.style.top = e.clientY + 'px';
+
+            // Kart uzakta olduğu için tilt etkisini biraz daha yumuşattık (bölen 30)
+            let xAxis = (window.innerWidth / 2 - e.pageX) / 30;
+            let yAxis = (window.innerHeight / 2 - e.pageY) / 30;
+            // Scale(0.8) korundu
+            wrapper.style.transform = `scale(0.8) rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+    </script>
+</body>
+</html>
